@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<style>
+			table {
+			  font-family: arial, sans-serif;
+			  border-collapse: collapse;
+			  width: 100%;
+			}
+
+			td, th {
+			  border: 1px solid #dddddd;
+			  text-align: center;
+			  /*padding: 8px;*/
+			  padding-top: 8px;
+			  padding-bottom: 8px;
+			}
+			.title_middle{text-align: center;}
+		</style>
+	</head>
+	<body>
+			<h2 class="title_middle">Coupon Report</h2>
+			<p class="title_middle">Coupon Code : {{cpCode}}<br>
+			<p class="title_middle">Active: {{active}}<br>
+
+
+		   </p><br>
+		<table>
+            <tr>
+            		<th width="10%" class="school_activity"> S.NO</th>
+            	    <th width="10%" class="school_activity"> Code</th>
+                    <th width="10%" class="school_activity"> Name</th>
+                    <th width="10%" class="school_activity">Validity Start date</th>
+					<th width="10%" class="school_activity">Validity End date</th>
+					<th width="10%" class="school_activity">Value(in Rs.)</th>
+					<th width="10%" class="school_activity">Product Code</th>
+					<th width="10%" class="school_activity">Discount(%)</th>
+					<th width="10%" class="school_activity">Quantity From</th>
+					<th width="10%" class="school_activity">Quantity To</th>
+					<th width="10%" class="school_activity">Active</th>
+	            
+                       
+			</tr>
+			{% for al in data %}
+					<tr>
+
+                        <td >{{ forloop.counter }}</td>     
+						<td>{{al.cpCode}}</td>
+						<td>{{al.cpName}}</td>
+						<td>{{al.PStDate|date:'d-m-Y'}}</td>
+						<td>{{al.PEndDate|date:'d-m-Y'}}</td>
+						<td>{{al.CoupValue}}</td>
+						<td>{{al.PCode}}</td>
+						<td>{{al.discnt}}</td>
+						<td>{{al.qty_from}}</td>
+						<td>{{al.qty_to}}</td>
+						<td>{{al.active}}
+						
+                       
+					</tr>
+			{% endfor %}
+		
+	
+		
+		</table>
+	</body>
+</html>

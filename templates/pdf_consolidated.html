@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <style>
+            table {
+              font-family: arial, sans-serif;
+              border-collapse: collapse;
+              width: 100%;
+            }
+
+            td, th {
+              border: 0px solid #dddddd;
+              text-align: center;
+              /*padding: 8px;*/
+              padding-top: 3px;
+              padding-bottom: 3px;
+            }
+            .title_middle{text-align: center;
+            }
+            .title_middle1{
+            font-family: arial, sans-serif;
+            font-size: 15px;}
+            .title_middle2{text-align: right;
+            font-family: arial, sans-serif;
+            }
+            h1.uppercase {
+  text-transform: uppercase;
+  text-align: center;
+}
+            @page{
+            size:a4 portrait;
+                @frame header_frame {
+                    -pdf-frame-content:header_content;
+                    left:30pt;
+                    width:512pt;
+                    top:10pt;
+                    height:50pt;
+                }
+                @frame header_frame1 {
+                    -pdf-frame-content:header_content1;
+                    left:30pt;
+                    width:522pt;
+                     top:140pt;
+                    height:50pt;
+                }
+                @frame header_frame2 {
+                    -pdf-frame-content:header_content2;
+                    left:30pt;
+                    width:522pt;
+                    top:50pt;
+                    height:30pt;
+                }
+                @frame header_frame3 {
+                    -pdf-frame-content:header_content3;
+                    left:30pt;
+                    width:522pt;
+                    top:70pt;
+                    height:60pt;
+                }
+                @frame content_frame { 
+                    left:30pt;
+                    width:512pt;
+                    top:175pt;
+                    height:640pt;
+                }
+              
+
+    
+        </style>
+    </head
+    >
+        <div id ="header_content">
+            <h1 class="uppercase">LS MILK TRADERS {{name}}<br>{{name}}</h1>
+        </div>
+            <div id ="header_content2">
+            <h2 class="title_middle">Consolidated Report From {{datefrom1}} to {{dateto1}}<br>
+            </h2>
+        </div>
+           
+            <div id ="header_content3">
+           <table class="title_middle1">
+               <tr>
+                <hr>
+                   <th>Center : {{centercode}} <br>
+                                     
+                    </th>
+                   <th>
+                        Route : {{routecode}}<br>
+                        
+                   </th>
+               </tr>
+                </hr>
+           </table>
+           <hr>
+            
+<h2></h2>
+  </div>           
+    <body>     
+           
+    <div id ="header_content1">
+        <table>
+            <tr>
+                <th class="title_center" width="22%">{{selecting}}</th>
+                <th class="title_center" width="7%" style="text-align:center;">Shift</th>
+                <th class="title_center" width="7%">Type</th>
+                <th class="title_center" width="7%">QTY (Kgs)</th>
+                <th class="title_center" width="7%">QTY(Ltrs)</th>
+                <th class="title_center" width="7%">FAT</th>
+                <th class="title_center" width="7%">SNF</th>
+                <th class="title_center" width="7%">FAT(KG)</th>
+                <th class="title_center" width="7%">SNF(KG)</th>
+                <th class="title_center" width="7%">Rate(per ltr)</th>
+                <th class="title_center" width="7%">Pel EXP</th>
+                <th class="title_center" width="8%">Gross Amount</th>
+            </tr>            
+        </table>
+    </div>
+    <table>
+            
+                {% if selecting == 'Center'  %}
+                {% for dc in datad %}
+                    <tr>
+                        <td class="title_center" width="22%" style="text-align:center;">{{dc.centercode}}-{{dc.centername}}</td>
+                        
+                        <td class="title_center" width="7%" style="text-align:center;">{{dc.Shift}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dc.Milktype}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dc.kgs|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dc.Ltrs|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dc.afat|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dc.asnf|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dc.Fat|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dc.Snf|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dc.RateLTR|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dc.pel|floatformat:2}}</td>
+                        <td class="title_center" width="8%" style="text-align:center;">{{dc.gamount|floatformat:2}}</td>
+                        
+                            
+                    </tr>
+
+                    {% endfor %}
+                    {% elif selecting == 'Day' %}
+                    {% for dd in datad %}
+                    <tr>
+                        <td class="title_center" width="22%" style="text-align:center;">{{dd.date|date:'d-m-Y'}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dd.Shift}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dd.Milktype}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dd.kgs|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dd.Ltrs|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dd.afat|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dd.asnf|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dd.Fat|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dd.Snf|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dd.RateLTR|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dd.pel|floatformat:2}}</td>
+                        <td class="title_center" width="8%" style="text-align:center;">{{dd.gamount|floatformat:2}}</td>
+
+                            
+                    </tr>
+                    {% endfor %}
+                    {% elif selecting == 'Route' %}
+                    {% for dr in datad %}
+                    <tr>
+                        <td class="title_center" width="22%" style="text-align:center;">{{dr.routecode}}-{{dr.routename}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dr.Shift}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dr.Milktype}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dr.kgs|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dr.Ltrs|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dr.afat|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dr.asnf|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dr.Fat|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dr.Snf|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dr.RateLTR|floatformat:2}}</td>
+                        <td class="title_center" width="7%" style="text-align:center;">{{dr.pel|floatformat:2}}</td>
+                        <td class="title_center" width="8%" style="text-align:center;">{{dr.gamount|floatformat:2}}</td>
+
+                        
+                            
+                    </tr>
+                    
+                    {% endfor %}
+                    {% endif %}
+                </table>
+                <table>
+                    <hr>
+                    <tr>
+                        
+                        <td>Total</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center;">{{total_kgssum_detail|floatformat:2}}</td>
+                        <td style="text-align:center;">{{total_ltrssum_detail|floatformat:2}}</td>
+                        <td style="text-align:center;">{{total_afatsum_detail|floatformat:2}}</td>
+                        <td style="text-align:center;"> {{total_asnfsum_detail|floatformat:2}}</td>
+                        <td style="text-align:center;">{{total_fatsum_detail|floatformat:2}}</td>
+                        <td style="text-align:center;">{{total_snfsum_detail|floatformat:2}}</td>
+                        <td style="text-align:center;">{{total_ratesum_detail|floatformat:2}}</td>
+                        <td style="text-align:center;">{{total_pelsum_detail|floatformat:2}}</td>
+                        <td style="text-align:center;">{{total_gamtsum_detail|floatformat:2}}</td>
+                    </tr>
+
+           
+        </table>
+<hr>
+    </body>
+</html>

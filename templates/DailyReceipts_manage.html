@@ -1,0 +1,397 @@
+
+{% extends "header.html" %}
+{% block title %}JacknJill{% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+<link href='https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css' rel='stylesheet'> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"> </script> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"> </script>
+<script> 
+    $(document).ready(function() { 
+        $(function() { 
+            $( "#my_date_picker" ).datepicker(); 
+        }); 
+    }) 
+</script> 
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker1').val(today);
+});</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<style type="text/css">
+	table 
+	{
+	  border-collapse: collapse !important;
+	  /*width: 100%;*/
+	}
+td 
+	{
+  		/*border: 1px solid #dddddd !important;*/
+  		text-align: center; 
+  		padding: 7px !important;
+	}
+th{
+	text-align: center !important;
+	padding: 7px !important;
+	/*border: 1px solid #dddddd !important;*/
+}
+.no_pad{
+	padding-left:0px !important;
+	padding-right: 0px !important;
+}
+.td_border{
+	border:none !important;
+}
+.td_border input{
+	width:55% !important;
+}
+.btn_delete{
+	padding: 8px 10px;
+	font-size: 10px;
+	text-align: center;
+	width:100px;
+	display: block;
+	background-color: brown;
+	color:#fff;
+	cursor:pointer;
+}
+.btn_delete:hover{
+	background-color: rgb(83,4,4);
+}
+.btn_submit{
+	padding: 8px 10px;
+	font-size: 10px;
+	text-align: center;
+	width:100px;
+	display: block;
+	background-color: brown;
+	color:#fff;
+	cursor:pointer;
+}
+.btn_submit:hover{
+	background-color: rgb(83,4,4);
+}
+th{
+	
+	color:#000 !important;
+}
+ input{
+	width:85px !important;
+	
+}
+input[type=date]{
+	width:150px !important;
+}  
+.scroll{
+	overflow-y: auto;
+	overflow-x: auto;
+	height: 200px;
+	margin-top: 0px;
+	width: 100%;
+	white-space: nowrap;
+
+}
+	
+.scroll thead th {
+	position: sticky;
+    top: 0;
+        
+}
+ 
+
+</style>
+
+
+<div class="container">
+	
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<form  method="POST"  action="/manage_dailyreceipts/" enctype="">
+				{% csrf_token %}
+				<h2><b><center>Daily Receipts Manage</center></b></h2>
+				&emsp;<label for="fname"><b>Date </b></label>&ensp;
+				<input type="date"  id="datePicker1" name="recdateT" placeholder="Enter YYYY/MM/DD" required="" >&emsp;&emsp;
+				   
+				</div>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+				<button type="submit" class="btn btn-primary btn-lg" id="getdata" value="">Fetch </button>
+			  	
+			</form>
+			<br>
+			<br>
+
+
+
+			<!--Declaring new form to submit the matched data of Dok Entry and QC Emtry to Daily Data table.-->
+			<form  method="POST"  action="/csv_dailyreceipts/" enctype="">  
+				{% csrf_token %}
+
+			<div class="col-md-12 col-sm-12 col-xs-12" id="table_notshow">
+				<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<!--	<h3><b><center>Manage Dock </center></b></h3>-->
+					<div class ="scroll">
+						<table class="css-serial">
+							<thead class="tableHeadcolor">
+					            <tr>	
+					            		<th style="background-color: #69bc5f !important;">S.NO</th>					         					     
+						                <th style="background-color: #69bc5f !important;">Order No </th>
+						                <th style="background-color: #69bc5f !important;">Receipt Date</th> 
+						                <th style="background-color: #69bc5f !important;">Receipt Type</th>
+						                <th style="background-color: #69bc5f !important;">Payment Reference No</th>
+						                <th style="background-color: #69bc5f !important;">Amount_Rec </th>
+						                <th style="background-color: #69bc5f !important;"> U P D A T E </th> 
+						                <th style="background-color: #69bc5f !important;">Remarks </th>
+						                
+						                
+						            </tr>
+					            </tr>
+					        </thead>
+					        <tbody id='form' class="form-block_1">
+					        	<input type="hidden" maxlength= 10 value="{{date1}}" name="recdateR_t2" >
+					        	
+					            	{% for dr in dr %}
+					            	<tr class="odd"  role="row">
+					            		<td> &nbsp;</td>
+					            		<!-- <td><input type="text" value="{{dc.date}}" name="date" ></td>
+					            		 <td><input type="text" value="{{dc.shift}}" name="shift_loc1" ></td>-->
+					            		 <!--x = datetime.strptime(request.POST["date"], "%Y-%m-%d")
+										<td>{{board.date |date:'d-m-Y'}}</td>				-->
+					            		<!--<input type="hidden" value="{{dr.recdate |date:'Y-m-d'}}" name="sdate1[]" style="text-align:right">-->
+					            		<input type="hidden" value="{{dr.id}}" name="drid1[]" style="text-align:center">
+						              			
+					            		
+										<td>	
+											<select name="OrderNo[]" id="orderNo" value=" {{dr.orderNo}}"  style="width:100px">
+												<option ></option>
+
+												<option value="{{dr.orderNo}}"{% if dr.orderNo == form.dr.value %} selected{% endif %} selected>{{dr.orderNo}}</option>
+												{% for Dailysales in Dailysales %}
+											    <option value="{{Dailysales.orderNo}}">{{Dailysales.orderNo}}-{{Dailysales.custcode}}</option>
+											    {% endfor %}
+										  	</select>
+											    
+										  	</select>
+										</td>  
+						               	<!--<td>
+						              	<input type="date" id="datePicker" name="PDate[]"  style="width:35px" value="{{dr.recdate}}"required="">-->
+						              	<td>
+			  	 						<input type="date" id="datePicker" name="Recdate[]" placeholder="DD/MM/YYYY"  value= "{{dr.recdate|date:'Y-m-d'}}"></td>
+							
+										<td>
+										<input type="text"  name="RecType[]" class="width_percent workflowinputRadius"value="{{dr.recType}}" step="any" style="width:50px"></td>
+										<td>
+										<input type="text"  name="PayRefNo[]" step="any" style="width:300px" value="{{dr.payRefNo}}"></td>
+
+										<td>&emsp;<input type="number" name="Amount[]" step="any" id="amount" value="{{dr.amount}}">
+										</td>
+										<td>
+											<select name="remove[]" value="{{dr.id}}" style="width:65px">
+											    <option value="N">N</option>
+											   <option value="P">P</option>
+										  	</select>
+										</td>
+						              
+						                <td>
+										<input type="text"  name="remarks[]"  step="any" style="width:500px" value="{{dr.remarks}}"></td>
+										
+										
+						                <input type="hidden" value="{{dr.branch}}" name="branch11" />
+						               
+					               </tr>        
+					                {% endfor %}
+					       </tbody>			    
+						</table>
+					</div>
+				</div>
+					
+
+						
+						
+		
+					</div>
+					</div>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+					<button type="submit" class="btn btn-primary btn-lg" id="submitData" value=""> Submit</button>
+						
+
+	<br>
+	<br>
+	<br>
+	<br>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+function myFunction1() {
+  document.getElementById("snf").value = (((document.getElementById("clr").value)/4) +(0.21*(document.getElementById("fat").value))+0.36).toFixed(2);
+}
+</script>
+
+<style>
+	.css-serial {
+ counter-reset: serial-number; 
+}
+.css-serial td:first-child:before {
+ counter-increment: serial-number;
+ content: counter(serial-number); 
+}
+	th{
+	text-align: center !important;
+	}
+</style>
+
+
+
+<script type="text/javascript">
+ var snf = document.getElementsById("y_email")[0].value;
+ alert(try2);
+</script>
+<script>
+	$(document).ready(function(){
+		$('#delete_btn')click(function(){
+			if(confirm("Are you sure you want to delete this lists ?")){
+				var id=[];
+				$(':checkbox:checked').each(function(i){
+					id[i]=$(this)val()
+				})
+				if(id.length==0){
+					alert("please select items to delete ?")
+				}else{
+					console.log(id)
+				}
+			}
+		})
+	})
+</script>
+<script type="text/javascript">
+	$(document).on("change", "#coupoun", function(){
+        var a =  $(this).find(':selected').data('name');
+        $("#center_name").val(a);
+    });
+	
+    function Amount(val) {
+    	/*alert("hi");*/
+        var fat = document.getElementById('fat').value;
+        var qty = document.getElementById('qty').value;
+        var snf = document.getElementById('snf').value;
+        var rate_min = '{{rate.rate}}';
+       	var quantity = parseFloat(qty)/parseFloat(1.03);
+       	var a1 = parseFloat(snf) + parseFloat(fat)
+        var rate = ( a1* parseFloat(rate_min))/100;
+        var total_amount = parseFloat(rate) * parseFloat(quantity);        
+        var amount = document.getElementById('rate');
+        var total = document.getElementById('amount');
+        total.value = total_amount;
+        amount.value = rate;
+    }
+</script>-->
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.add-more-btn').click(function() {
+            /*var clone = $('.form-block_1:first').clone();
+            $('#form-new').append(clone);*/
+            var $tableBody = $('.data-table ').find("tbody"),
+            $trFirst = $tableBody.find("tr:First");
+		        $trNew = $trFirst.clone();
+				
+		    $trLast.after($trNew);
+
+        });
+    });
+
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("custcode").value = localStorage.getItem("custcode");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("custcode",document.getElementById("custcode").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("Prod-Code").value = localStorage.getItem("Prod-Code");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("Prod-Code",document.getElementById("Prod-Code").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("coupoun").value = localStorage.getItem("coupoun");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("coupoun",document.getElementById("coupoun").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("coupoun").value = localStorage.getItem("coupoun");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("coupoun",document.getElementById("coupoun").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("sale").value = localStorage.getItem("sale");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("sale",document.getElementById("sale").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("datePicker").value = localStorage.getItem("datepicker");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("datepicker",document.getElementById("datepicker").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("datePicker1").value = localStorage.getItem("datepicker1");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("datepicker1",document.getElementById("datepicker1").value);
+  });
+
+</script>
+
+{% endblock %}

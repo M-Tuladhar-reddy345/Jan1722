@@ -1,0 +1,360 @@
+{% extends "header.html" %}
+{% block title %}JacknJill{% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% block content %}
+<link href='https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css' rel='stylesheet'> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"> </script> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"> </script>
+<script> 
+    $(document).ready(function() { 
+        $(function() { 
+            $( "#my_date_picker" ).datepicker(); 
+        }); 
+
+    }) 
+	$( ".start_date" ).datepicker({
+	  defaultDate: +7
+	});
+
+</script> 
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker').val(today);
+});</script>
+<style>
+
+	th , td{
+		text-align: center !important;
+		padding: 8px !important;
+		border: 1px solid black !important;
+	}
+	/*.scrollable{
+		overflow: scroll;
+		height: 500px;
+	}*/
+	.scroll{
+  		overflow-y: auto;
+  		overflow-x: auto;
+		height: 400px;
+		margin-top: -5px;
+		width: 100%;
+		white-space: nowrap;
+	}
+	
+	.scroll thead th {
+	    position: sticky;
+        top: 0;
+        
+	}
+	.footer{
+		position: sticky;
+		bottom: 0;
+		background-color: #69bc5f !important;
+		color:  #fff;
+	}
+
+	.titledash{
+		width:  100%;
+		height:  50px;
+		text-align: center;
+		text-transform: capitalize;
+		background-color: #5d50c6 !important;
+		color:  #fff;
+		font-size: 30px;
+		font-weight: bold;
+	}	
+	
+	
+	</style>
+
+<div class="container ">
+	<div class="row">
+		<div  class="col-sm-12 col-md-12 col-xs-12">
+			<br>
+			
+			
+			<br><button type="button"><a href="/DailySales/pdf1/{{datefrom}}/{{dateto}}/{{orderNo}}/{{custcode}}/" target="_blank"> PDF Download</a></button>&emsp;
+			
+			<button type="button"><a href="/exceldailysales/{{datefrom}}/{{dateto}}/{{orderNo}}/{{custcode}}/" target="_blank"> Excel Download</a></button><br>
+			
+			<form method="POST" action="" enctype=""><br>
+				{% csrf_token %}
+				<label><b>Report By</b></label>&emsp;
+                  <select name="Issued_to"  id="Issuedto" onchange="changeDropdown()">
+                  <option value="Dtls" >All Detail</option>
+                  <option value="Day" >Day</option>
+                  <option value="orderWise" >Order Wise</option>
+                  <option value="custWise" >Customer</option>
+                  <option value="zoneWise" >Zone</option>
+                  <option value="SEWise" >Sales Exec</option>
+                  
+                  </select><br>
+
+				<label for="fname"><b>From Date</b></label>
+				<input class="border_right " type="date" onfocus="(this.type='date')" onblur="(this.type='date')" id="my_date_picker" name="datefrom" placeholder="Enter MM/DD/YYYY" required="" value="{{start_of_m|date:'Y-m-d'}}">
+				<!--<input class="border_foot start_date" type="date" id="my_date_picker" name="date_from" placeholder="Enter MM/DD/YYYY" required="">-->
+				<label for="fname"><b>To Date</b> </label>
+				<input class="border_right" type="date" onfocus="(this.type='date')" onblur="(this.type='date')" id="my_date_picker1" name="dateto" placeholder="Enter MM/DD/YYYY" value="{{end_of_m|date:'Y-m-d'}}" required="">
+				<!--<input class="border_foot" type="date" id="my_date_picker" name="date_to" placeholder="Enter MM/DD/YYYY" required="">-->
+				<label for="fname"> <b>Order No</b></label>
+				<select name="orderNo" id="orderNo">
+				    <option value="all">All</option>
+
+				    {% for DailySales in DailySales %}
+						    <option value="{{DailySales.orderNo}}">{{DailySales.orderNo}}</option>
+				  	{% endfor %}
+			  	</select>
+			  	<label for="fname"><b>Customer</b>  </label>
+				<select name="custcode" id="custcode">
+				    <option value="all">All</option>
+				    {% for DailySales in DailySales %}
+						    <!--<option value="{{center.centre_code}}">{{center.centre_code}}-{{center.name}}</option>-->
+						    <option value="{{DailySales.custcode}}">{{DailySales.custcode}}</option>
+				  	{% endfor %}
+			  	</select>
+
+			  	<label for="fname"><b>Sales Exec</b>  </label>
+				<select name="salesexec" id="salesexec">
+				    <option value="all">All</option>
+				    {% for DailySales in DailySales %}
+						    <!--<option value="{{center.centre_code}}">{{center.centre_code}}-{{center.name}}</option>-->
+						    <option value="{{DailySales.SaleExecCode}}">{{DailySales.SaleExecCode}}</option>
+				  	{% endfor %}
+			  	</select>
+
+			  	<label for="fname"><b>Zone</b>  </label>
+				<select name="zone" id="zone">
+				    <option value="all">All</option>
+				    {% for DailySales in DailySales %}
+						    <!--<option value="{{center.centre_code}}">{{center.centre_code}}-{{center.name}}</option>-->
+						    <option value="{{DailySales.ZoneCode}}">{{DailySales.ZoneCode}}</option>
+				  	{% endfor %}
+			  	</select>
+				  
+				<button type="submit" class="btn btn-primary btn-lg" id="getdata" value=""><b>Get Data</b></button>
+			</form>
+			<br>
+			<body>
+				
+					 <div colspan="10" class="titledash" > Daily Sales report   {{datefrom1}} {{aa}} {{dateto1}} </div>
+					
+					
+				<div class ="scroll">
+				<table >
+				<thead>
+					<tr>
+						<th width="10%" style="background-color: #69bc5f !important;">Sales Exec</th>
+						
+						<!--<th width="10%" style="background-color: #69bc5f !important;">Date</th>
+						<th width="6%" style="background-color: #69bc5f !important;">Shift</th>-->
+						<th width="13%" style="background-color: #69bc5f !important;">Customer</th>
+
+						<th width="7%" style="background-color: #69bc5f !important;">Amount</th>
+						<th width="7%" style="background-color: #69bc5f !important;">Disc Amt</th>
+						<th width="10%" style="background-color: #69bc5f !important;">Net Amount</th>
+						<th width="10%" style="background-color: #69bc5f !important;">Rec Amount</th>
+						<th width="10%" style="background-color: #69bc5f !important;">OS Amount</th>
+						<th width="5%" style="background-color: #69bc5f !important;">Date</th>
+						<th width="7%" style="background-color: #69bc5f !important;">Product Name</th>
+						<th width="7%" style="background-color: #69bc5f !important;">Quantity</th>
+						<th width="7%" style="background-color: #69bc5f !important;">unitRate </th>
+						<th width="7%" style="background-color: #69bc5f !important;">Order no</th>
+						
+						
+					</tr>
+				</thead>
+				<!--Model daily_sales - branch,custcode,date,shift,orderNo,prodCode,quantity,couponCode,disc,amount,unitRate,netAmount,ZoneCode,SaleExecCode-->
+				<tbody >
+					{% for i in SalesExecs_data %}
+					<tr>
+						<td width="10%" ><a onclick='toggleClass2("{{i.0}}")'>{{i.0}}</a></td></td>
+						<!--<td width="10%">{{dc.date|date:'d-m-Y'}}</td>
+						<td width="6%">{{dc.shift}}/{{dc.milk_type}}</td>-->
+						
+						<!--<td width="13%">{{dc.custcode}}-{{dc.custCode}}-{{dc.custName}}</td>-->
+						<td width="13%"></td>
+						
+						<td width="7%" style="text-align:right !important">{{i.1|floatformat:2}}</td>
+						<td width="7%" style="text-align:right !important">{{i.3|floatformat:2}}</td>						
+						<td width="10%" style="text-align:right !important">{{i.2|floatformat:2}}</td>						<td width="13%">{{i.4|floatformat:2}}</td>
+						<td width="13%">{{i.5|floatformat:2}}</td>
+					</tr>
+					{% for dc in Custs_data %}
+					{% if dc.1 == i.0 %}
+					<tr class= "{{i.0}}" style="display: none;">
+						<td width="10%"></td>
+						<!--<td width="10%">{{dc.date|date:'d-m-Y'}}</td>
+						<td width="6%">{{dc.shift}}/{{dc.milk_type}}</td>-->
+						
+						<!--<td width="13%">{{dc.custcode}}-{{dc.custCode}}-{{dc.custName}}</td>-->
+						<td width="13%"><a onclick='toggleClass2("{{dc.0}}")'>{{dc.0}}</a></td></td>
+						<!--<td width="7%" style="text-align:right !important">{{dc.ZoneCode}}-{{dc.ZName}}</td>-->
+						
+						<td width="7%" style="text-align:right !important">{{dc.2|floatformat:2}}</td>						
+						<td width="7%" style="text-align:right !important">{{dc.4|floatformat:2}}</td>	
+						<td width="10%" style="text-align:right !important">{{dc.3|floatformat:2}}</td>
+						<td width="13%">{{dc.5|floatformat:2}}</td>
+						<td width="13%">{{dc.6|floatformat:2}}</td>
+
+					</tr>
+					{% for dc2 in ds %}
+					{% if dc2.custName == dc.0  %}
+					<tr class= "{{dc.0}}" style="display: none;">
+						<td width="10%"></td>
+						<!--<td width="10%">{{dc.date|date:'d-m-Y'}}</td>
+						<td width="6%">{{dc.shift}}/{{dc.milk_type}}</td>-->
+						
+						<!--<td width="13%">{{dc.custcode}}-{{dc.custCode}}-{{dc.custName}}</td>-->
+						<td width="13%"></td>
+
+						<!--<td width="7%" style="text-align:right !important">{{dc.ZoneCode}}-{{dc.ZName}}</td>-->
+						
+						<td width="7%" style="text-align:right !important">{{dc2.amount|floatformat:2}}&ensp;</td>						
+						<td width="7%" style="text-align:right !important">{{dc2.comm|floatformat:2}}&ensp;</td>	
+						<td width="10%" style="text-align:right !important">{{dc2.netAmount|floatformat:2}}&ensp;</td>
+						<td width="13%"></td>
+						<td width="13%"></td>
+						<td width="5%" >{{dc2.date | date:'d/m/y'}}</td>
+						<td width="7%" >{{dc2.PName}}</td>
+						<td width="7%" >{{dc2.quantity | floatformat:2 }}</td>
+						<td width="7%" >{{dc2.unitRate | floatformat:2 }} </td>
+						<td width="7%">{{dc2.orderNo}}</td>
+
+
+					</tr>
+					{% endif %}
+					{% endfor %}
+					{% endif %}
+					{% endfor %}
+					{% endfor %}
+
+				<div class="footer">
+				<tfoot class="footer">
+				<tr>
+	            <td style="text-align:left !important"><b>Total</b></td>
+
+	            <td style="text-align:right !important">&ensp;</td>
+	            <td style="text-align:right !important"><b>{{total_Amountsum_detail|floatformat:2}}</b>&ensp;</td>	            	            
+	            <td style="text-align:right !important"><b>{{total_CommAmtsum_detail|floatformat:2}}</b>&ensp;</td>
+	            <td style="text-align:right !important"><b>{{total_NetAmtsum_detail|floatformat:2}}</b>&ensp;</td>
+	            <td  style="background-color: #69bc5f !important;"><b>{{total_RecAmtsum_detail | floatformat:2}}</b></td>
+	            <td  style="background-color: #69bc5f !important;"><b>{{total_OsAmtsum_detail | floatformat:2}}</b></td>
+	            <td  style="background-color: #69bc5f !important;"></td>
+	            <td  style="background-color: #69bc5f !important;"></td>
+	            <td  style="background-color: #69bc5f !important;"></td>
+	            <td  style="background-color: #69bc5f !important;"></td>
+	            <td  style="background-color: #69bc5f !important;"></td>
+           
+	          </tr>
+	          </tfoot> 
+	      </div>
+				</tbody>
+			</table>
+			</div>
+			
+			<br>
+		</body>
+		</div>		<br>
+		</div>
+		
+	</div>
+	<br>
+		<br>
+		<br>
+</div>
+<script src="{% static 'js/ajax-jquery.min.js' %}"></script><script>
+
+    $(document).ready(function(){
+    document.getElementById("my_date_picker").value = localStorage.getItem("my_date_picker");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("my_date_picker",document.getElementById("my_date_picker").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("my_date_picker1").value = localStorage.getItem("my_date_picker1");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("my_date_picker1",document.getElementById("my_date_picker1").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("route").value = localStorage.getItem("route");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("route",document.getElementById("route").value);
+  });
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("center").value = localStorage.getItem("center");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("center",document.getElementById("center").value);
+  });
+</script>
+<script type="text/javascript">
+/*$("#displaytable").hide();
+*/
+/*$(document).ready(function(){
+	$("#centerhide").hide()
+		$('#getdata').click(function() {
+			$("#centerhide").show()
+	});
+});*/
+
+$(document).ready(function() {
+	$('.scroll').click(function() {
+		var element = document.getElementById("scroll");
+		element.classList.add("scrollable");
+	});
+    $('[name="start_date"]').val( '{{start_of_yr | date:"m/d/yy"}}' );
+    $('[name="end_date"]').val( '{{end_of_yr | date:"m/d/yy"}}' );
+});
+function toggleClass2(id) {
+
+	 console.log(id);
+    // get the clock
+    //var ids = document.getElementById(id);
+    var idss = document.getElementsByClassName(id);
+    console.log(idss.length);
+
+
+    // now toggle the clock and the button text, depending on current state
+    for (i = 0; i < idss.length; i++) {
+
+    if (idss[i].style.display == '') {
+      // clock is visible. hide it
+      idss[i].style.display = 'none';
+          }
+    else {
+      // clock is hidden. show it
+      idss[i].style.display = '';
+    }
+    console.log(idss[i] + idss[i].style.display)
+  }}
+</script>
+
+
+{% endblock %}

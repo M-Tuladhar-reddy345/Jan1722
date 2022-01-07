@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<head>
+        <style>
+            table {
+              font-family: arial, sans-serif;
+              border-collapse: collapse;
+              width: 100%;
+            }
+
+            td, th {
+              border: 0px solid #dddddd;
+              text-align: center;
+              /*padding: 8px;*/
+              padding-top: 7px;
+              padding-bottom: 8px;
+            }
+            .title_middle{text-align: center;
+            }
+            .title_middle1{
+            font-family: arial, sans-serif;
+            font-size: 15px;}
+            .title_middle2{text-align: right;
+            font-family: arial, sans-serif;
+            }
+            h1.uppercase {
+  text-transform: uppercase;
+  text-align: center;
+}
+            
+
+        </style>
+
+            <h2 style="text-align:center;">Customer Wise Summary Report   {{datefrom1}} {{aa}} {{dateto1}}<br>
+                Order No : {{orderNo}} <br>  Customer : {{custcode}}
+            
+          
+            </h2>
+        <br>
+        
+  <body>
+        
+         <table>
+           
+                <hr>
+                    <tr>
+                         
+                          <!--<th width="10%" class="school_activity">Custcode</th>-->
+                          <th width="5%" class="school_activity">S.NO</th>
+                        <th width="33%" class="school_activity">Customer</th>
+                        <th width="15%" class="school_activity">Date</th>
+                        <th width="15%" class="school_activity">Order No</th>
+                        <th width="15%" class="school_activity">Amount</th>
+                        <th width="15%" class="school_activity">Discount </th>
+                        <th width="15%" class="school_activity">Net Amount</th>
+                        <th width="15%" class="school_activity">Rec Amount</th>
+                        <th width="15%" class="school_activity">OS Amount</th>
+                        
+                        <!--<th width="10%" class="school_activity">Product </th>
+                        <th width="10%" class="school_activity">Quantity</th>
+                        <th width="10%" class="school_activity">unit Rate </th>
+                        <th width="10%" class="school_activity">Sales Exec </th>
+                        <th width="10%" class="school_activity">Zone </th>-->
+                        
+                        
+                        
+                    </tr>
+                        
+                        
+                </hr>
+            </thead>
+            </table>
+
+        </div>        
+<hr>
+       <table>
+            <tbody>
+                <tbody >
+                  <!-- {% for i in Custcodes_data %}
+                    <tr>
+                        <td style="text-align:center !important" width="5%">{{forloop.counter }}</td>
+
+                        <td width="10%" ><a onclick='toggleClass2("{{i.0}}")'>{{i.0}}</a></td></td>-->
+                        <!--<td width="10%">{{dc.date|date:'d-m-Y'}}</td>
+                        <td width="6%">{{dc.shift}}/{{dc.milk_type}}</td>
+                        
+                        <td width="13%">{{dc.custcode}}-{{dc.custCode}}-{{dc.custName}}</td>
+                        <td width="10%" style="text-align:center !important">{{i.1}}</td>
+                       <td width="10%" style="text-align:left !important"></td>
+                      <td></td>
+                        <td width="10%"  style="text-align:left !important">{{i.2|floatformat:2}}</td>
+                        <td width="10%" style="text-align:left !important">{{i.3|floatformat:2}}</td>                       
+                        <td width="10%"  style="text-align:center !important">{{i.4|floatformat:2}}</td>                      
+                        <td width="10%"  style="text-align:center !important">{{i.5|floatformat:2}}</td>
+                        <td width="10%"  style="text-align:center !important"><b>{{i.6|floatformat:2}}</b></td>
+                    </tr>
+                    i.orderNo, i.custCode, i.date-->
+                    <!--orders_data.append([e[0],e[1], e[2],3daywise_Amountsum_detail, 4total_CommAmtsum_detail, 5-daywise_NetAmtsum_detail,  6-total_RecAmtsum_detail])
+                    {% for dc in orders_data %}
+
+                    {% if dc.1 == i.0 %}
+                    <tr class= "{{i.0}}" style="display: none;">
+                        <td width="10%"></td>
+                        <td width="10%"></td>
+                        <td width="10%"><a {{dc.0}}>{{dc.2|date:'d-m-Y'}}</a></td>
+                        <td width="10%">{{dc.date|date:'d-m-Y'}}</td>
+                        <td width="6%">{{dc.shift}}/{{dc.milk_type}}</td>-->
+                        
+                        <!--<td width="13%">{{dc.custcode}}-{{dc.custCode}}-{{dc.custName}}</td>
+                        <td width="10%"><a {{dc.0}}><b><i>{{dc.0}}</b></i></a></td>
+                        <td width="7%" style="text-align:right !important">{{dc.ZoneCode}}-{{dc.ZName}}</td>
+                        <td width="10%" style="text-align:center !important">{{dc.3}}</td>
+                        <td width="10%" style="text-align:center !important">{{dc.4}}</td>                        
+                        <td width="10%" style="text-align:center !important">{{dc.5}}</td>    
+                        <td width="10%" style="text-align:center !important">{{dc.6}}</td>
+                        <td width="10%" style="text-align:center !important">{{dc.7|floatformat:2}}</td>
+                        
+
+                    </tr>-->
+                    {% for dc2 in data %}
+                    <!--{% if dc2.orderNo == dc.0  %}
+                    <tr class= "{{dc.0}}" style="display: none;">
+                        <td width="10%" style="display: none;"></td>
+                        <td width="10%">{{dc.date|date:'d-m-Y'}}</td>-->
+                        
+                        
+                        <!--<td width="13%">{{dc.custcode}}-{{dc.custCode}}-{{dc.custName}}</td>-->
+                        
+
+                        <!--<td width="7%" style="text-align:center !important">{{dc.ZoneCode}}-{{dc.ZName}}</td>-->
+                        <td style="text-align:center !important" width="5%">{{forloop.counter }}</td>
+
+                        <td width="33%" style="text-align:center !important">{{dc2.custName}}</td> 
+                        <td width="15%" style="text-align:center !important">{{dc2.date|date:'d-m-Y'}}</td> 
+                        <td width="15%" style="text-align:center !important">{{dc2.orderNo}}</td>
+                        <td width="15%" style="text-align:center !important">{{dc2.amount|floatformat:2}}</td>  
+                        <td width="15%" style="text-align:center !important">{{dc2.comm|floatformat:2}}</td>                   
+                        <td width="15%" style="text-align:center !important">{{dc2.netAmount|floatformat:2}}</td>
+                        <td width="15%" style="text-align:center !important">{{dc2.RecAmount |floatformat:2 }}</td>
+                        <td width="15%" style="text-align:center  !important">{{dc2.OSAmount|floatformat:2}}</td>
+                      <!-- <td width="10%" >{{dc2.PName}}</td>
+                        <td width="10%" >{{dc2.prodCode}}</td>
+                        <td width="10%" style="text-align:center !important">{{dc2.quantity }}</td>
+                        <td width="10%" style="text-align:center !important">{{dc2.unitRate | floatformat:2 }}&emsp;&emsp; </td>
+                        <td width="10%" >{{dc2.SEname }}&emsp;&emsp;&emsp;</td>
+                        <td width="10%" >{{dc2.ZName }} </td>-->
+
+
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                    {% endfor %}
+
+                <tfoot class="footer">
+                <tr>
+                <td style="text-align:left !important"><b>Total</b></td>
+               
+                <td  style="background-color: #69bc5f !important;"></td>
+                <td  style="background-color: #69bc5f !important;"></td>
+                <td  style="background-color: #69bc5f !important;"></td>
+                
+                <td style="text-align:center !important"><b>{{total_Amountsum_detail|floatformat:2}}</b>&ensp;</td>  
+
+                <td style="text-align:center !important"><b>{{total_CommAmtsum_detail|floatformat:2}}</b>&ensp;</td>                             
+         
+                <td style="text-align:center !important"><b>{{total_NetAmtsum_detail|floatformat:2}}</b>&ensp;</td>
+            <td  style="background-color: #69bc5f !important;"><b>{{total_RecAmtsum_detail | floatformat:2}}</b></td>
+                
+                
+                <td><b>{{total_OSAmtsum_detail | floatformat:2}}</b></td>
+                
+                <!--<td  style="background-color: #69bc5f !important;"></td>
+                
+                <td  style="background-color: #69bc5f !important;"><b> {{total_kgssum_detail}}<b></td>
+                    <td  style="background-color: #69bc5f !important;"><b>{{total_unitRatesum_detail}}<b></td>
+                
+                <td  style="background-color: #69bc5f !important;"></td>
+                <td  style="background-color: #69bc5f !important;"></td>-->
+              </tr>
+              </tfoot> 
+          </div>
+                </tbody>
+                
+       
+            
+             
+         
+            </table>
+             
+   <!-- <table id="header-fixed"></table>-->
+    </body>
+
+</html>

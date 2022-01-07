@@ -1,0 +1,389 @@
+{% extends "header.html" %}
+{% block title %}JacknJill{% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% block content %}
+<link href='https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css' rel='stylesheet'> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"> </script> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"> </script>
+<script> 
+
+
+ $(document).ready(function(){
+        $('.add-more-btn').click(function() {
+            /*var clone = $('.form-block_1:first').clone();
+            $('#form-new').append(clone);*/
+            var $tableBody = $('.data-table ').find("tbody");
+            $trFirst = $tableBody.find("tr:first");
+            $trNew = $trFirst.clone();
+
+			var $tableBody1 = $('.data-table1 ').find("tbody");
+			($trNew).attr("readonly", true);
+			($trNew).each(function () {
+                   $(this).children("td").each(function () {
+                   		$(this).find("input").prop("readonly", true);
+                   });
+
+               });
+			var rowCount = $('.data-table1 tr').length+1;
+			($trNew).prepend($('<td>').append(rowCount));
+			$tableBody1.prepend($trNew);
+        });
+    });
+    $(document).ready(function() { 
+        $(function() { 
+            $( "#my_date_picker" ).datepicker(); 
+        }); 
+
+    }) 
+	$( ".start_date" ).datepicker({
+	  defaultDate: +7
+	});
+
+</script> 
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker').val(today);
+});</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<style>
+th{
+	text-align: center !important;
+	padding: 7px !important;
+	/*border: 1px solid black !important;*/
+}
+th{
+	
+	color:#000 !important;
+}
+
+td{
+    text-align: center !important;
+    padding: 5px !important;
+	/*border: 1px solid black !important;*/
+
+}
+.scroll{
+    overflow-y: auto;
+    overflow-x: auto;
+    height: 400px;
+    margin-top: 0px;
+    width: 100%;
+    white-space: nowrap;
+
+}
+    
+.scroll thead th {
+    position: sticky;
+    top: 0;
+        
+}
+
+</style>
+<script>
+    $(document).ready(function() {
+  $('.image-link').magnificPopup({type:'image'});
+});
+</script>
+
+
+
+<div class="container">
+	<!--<div style="border:1px solid #dddddd;padding:10px;margin:10px;">-->
+		<div class="col-md-12 col-sm-12 col-xs-12">
+				<h2><b><center> Manage Product Master</center></b></h2>
+
+			<form  method="POST"  action="/manageproductmaster/" enctype="multipart/form-data">
+				{% csrf_token %}
+				
+              &emsp;<label><b>Category</b></label>&emsp;
+                 <select id="prod" name="prod_type" value="{{PM.prod_type}}" style="width:75px">
+                 <option value="ALL" selected>ALL</option>                  
+                    {% for Prodtype in Prodtype %}
+                    <option value="{{Prodtype.pTypeCode}}">{{Prodtype.pTypeCode}}</option>
+                    {% endfor %}
+               </select>
+                                
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                <button type="submit" class="btn btn-primary btn-lg" id="getdata" value=""> Get Data </button>
+            
+            <br>
+                
+            </form>
+            <form  method="POST"  action="/manageproductmaster1/" enctype="multipart/form-data">  
+                {% csrf_token %}
+          	 	
+            <div class="col-md-12 col-sm-12 col-xs-12" id="table_notshow">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+        
+                        <h3><b><center></center></b></h3>
+                        <div class ="scroll">
+                        <table class="css-serial">
+                            <thead>
+                                <tr>
+                                    <th style="background-color: #69bc5f !important;">S.NO</th>
+                                    <th style="background-color: #69bc5f !important;">Type</th>
+                                    <th style="background-color: #69bc5f !important;">Code</th>
+                                    <th style="background-color: #69bc5f !important;">Name</th>
+                                    <th style="background-color: #69bc5f !important;">Unit Rate</th>                           
+                                    <th style="background-color: #69bc5f !important;">Start Date </th>
+                                    <th style="background-color: #69bc5f !important;">End Date</th> 
+                                    
+                                    <th style="background-color: #69bc5f !important;">Qty From</th>
+                                    <th style="background-color: #69bc5f !important;">Qty TO</th>
+                                    <th style="background-color: #69bc5f !important;">Cust Type</th>
+                                    <th style="background-color: #69bc5f !important;">Image</th>
+                                    <th style="background-color: #69bc5f !important;">Upload Photo</th> 
+                                    <th style="background-color: #69bc5f !important;">Active</th>
+                                    <th style="background-color: #69bc5f !important;">Remove</th>
+                                
+                                </tr>
+                            </thead>
+                            <tbody id='form' class="form-block_1">
+                                <input type="hidden" maxlength= 10 value="{{date1}}" name="recdateR_t2" >
+                                <input type="hidden" maxlength= 10 value="{{prod_type1}}" name="prod_type" >
+                                    {% for PM in PM %}
+                                    <tr class="odd"  role="row">
+                                    <td style="text-align:center" > &nbsp;&nbsp;</td>
+                                    <input type="hidden" value="{{PM.prod_type}}" name="prod_type1[]" style="text-align:right">
+                                    <input type="hidden" value="{{PM.id}}" name="PMid1[]" style="text-align:center">
+                                       <td>
+                                         <select id="prod" name="prod_type[]" value="{{PM.prod_type}}" style="width:75px"> 
+                                         <!--<option value="ALL">ALL</option>-->
+                                         <option value="{{PM.prod_type}}"{% if PM.prod_type == form.PM.value %} selected {% endif %} selected>{{PM.prod_type}}</option>
+                                            {% for Prodtype in Prodtype %}
+                                            <option value="{{Prodtype.pTypeCode}}">{{Prodtype.pTypeCode}}</option>
+                                            {% endfor %}
+                                       </select>
+                                   </td>
+                                   <td>
+                                   <input type="text"  value ="{{PM.PCode}}" name="PCode[]"  id="PCodeE" style="width:85px" readonly></td>
+                                        <td>
+                                        <input type="text" value ="{{PM.PName}}" name="PName[]"  id="PName" style="width:175px"></td>
+
+                                        <td><input type="number" name="unitRate[]"  id="unitrate" value="{{PM.unitRate}}" style="text-align:right;width:75px" ></td>
+                                        
+                                       <td>
+                                        <input type="date" id="datePicker1" name="PStDate[]"  style="width:130px" value= "{{PM.PStDate|date:'Y-m-d'}}"  required="" id="pstdate">
+                                        </td>
+                                        <td>
+                                        <input type="date" id="datePicker1" name="PEndDate[]"  style="width:130px" value= "{{PM.PEndDate|date:'Y-m-d'}}" required="" id="enddate">
+                                        </td>
+                                        
+                                        <td>
+                                        <input type="number" name="qty_from[]" id="qty" value="{{PM.qty_from}}" style="text-align:right;width:75px"></td>
+                                        <td>
+                                        <input type="number" class="width_percent workflowinputRadius" name="qty_to[]" id="qty1" value="{{PM.qty_to}}" style="text-align:right;width:75px"></td>
+                                        <td>    
+                                            <select name="custCode[]" id="custCode" value="{{PM.custType}}" style="width:75px">
+
+                                                <option value="{{PM.custType}}"{% if PM.custCode == form.PM.value %} selected {% endif %} selected>{{PM.custType}}</option>
+                                                {% for customer in customer %}
+                                                <option value="{{customer.cTypeCode}}">{{customer.cTypeCode}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            
+                                        </td>
+                                        <!--<td><a class="image-link" href ="/media/{{PM.document}}" name="HvPhoto"> View Image</a></td>-->
+
+                                       <td><a class="image-link" href ="{{PM.document}}" name="document[]">view Image</a></td>
+                      <td>
+                      <input type="file" name="HvPhoto[{{PM.PCode}}]" style="width: 100%;" accept=""  notrequried   >
+                      </td>
+
+                                       <!-- <td><a class="image-link" href ="{{PM.document}}" name="document[]">view Image</a></td>
+                                            
+                                       <td>
+                                        <input type="checkbox" name="uploaded_file_url" checked hidden="">
+                                        
+                                        <input type="file" name="HvPhoto[{{PM.PCode}}]" style="width: 100%;" accept=""  notrequried   >
+
+                                        <input type="file" name="uploaded_file_url[]"  style="width: 100%;" accept="" notrequried multiple value={{PM.document}} >
+                                        </td>-->
+                                                        
+                                        <td>
+                                        <select name="active[]" value="{{PM.active}}" id="active" required>
+
+                                                <option value="yes">yes</option>
+                                                <option value="no">no</option>
+                                                <option value="{{ PM.active }}" {% if PM.active == form.PM.value %} selected{% endif %} selected>{{PM.active}}</option>
+                
+                                                                                        
+                                            </select>
+                                     </td>
+                                        
+                                        <td>
+                                            <select name="remove[]" value="{{PM.id}}" style="width:65px">
+                                                <option value="N">N</option>
+                                                <option value="Y">Y</option>
+                                            </select>
+                                        </td>
+                                        
+                                        <input type="hidden" value="{{PM.branch}}" name="branch11" />
+                                       
+                                   </tr>        
+                                    {% endfor %}
+                           </tbody>             
+                        </table>
+                    </div>
+                    </div>
+                </div>
+                    
+
+                        
+                    </div>
+               
+                   
+        
+                        
+        
+                               
+                    
+        
+                                
+                  
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            <button type="submit" class="btn btn-primary btn-lg" > Submit </button>
+        </form>	
+        </div></div></div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+<style>
+    .css-serial {
+ counter-reset: serial-number; 
+}
+.css-serial td:first-child:before {
+ counter-increment: serial-number;
+ content: counter(serial-number); 
+}
+    th{
+    text-align: center !important;
+    }
+</style>
+
+<!--<script>
+
+    $(document).ready(function(){
+    document.getElementById("PCodeE").value = localStorage.getItem("PCodeE");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("PCodeE",document.getElementById("PCodeE").value);
+  });
+
+</script>-->
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("PNameE").value = localStorage.getItem("PNameE");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("PNameE",document.getElementById("PNameE").value);
+  });
+
+</script>
+<!--<script>
+
+    $(document).ready(function(){
+    document.getElementById("documentE").value = localStorage.getItem("documentE");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("documentE",document.getElementById("documentE").value);
+  });
+
+</script>-->
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("prod_typeE").value = localStorage.getItem("prod_typeE");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("prod_typeE",document.getElementById("prod_typeE").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("custCode").value = localStorage.getItem("custCode");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("custCode",document.getElementById("custCode").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("stdate").value = localStorage.getItem("stdate");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("stdate",document.getElementById("stdate").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("enddate").value = localStorage.getItem("enddate");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("enddate",document.getElementById("enddate").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("unitRate").value = localStorage.getItem("unitRate");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("unitRate",document.getElementById("unitRate").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("qty").value = localStorage.getItem("qty");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("qty",document.getElementById("qty").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("qty1").value = localStorage.getItem("qty1");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("qty1",document.getElementById("qty1").value);
+  });
+
+</script>
+        
+{% endblock %}

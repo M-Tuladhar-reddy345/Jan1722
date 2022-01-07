@@ -1,0 +1,510 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<style>
+.css-serial {
+ counter-reset: serial-number; 
+}
+.css-serial td:first-child:before {
+ counter-increment: serial-number;
+ content: counter(serial-number); 
+}
+.total-column {
+    text-align:right;
+}
+</style>
+<style>
+            body{
+                
+            }
+            table {
+              font-family: arial, sans-serif;
+              border-collapse: collapse;
+              width: 100%;
+              padding-top: 0px;
+              padding-bottom: 0px;
+
+            }
+            .tablebreak{
+                /* page-break-inside:auto;*/ 
+                 border: 1px solid #dddddd;
+                 page-break-inside:avoid; 
+                 page-break-after:avoid;
+            }
+            tfoot { 
+                display:table-footer-group
+                 }
+            td, th {
+              border: 0px solid #dddddd;
+              text-align: left;
+              /*padding: 8px;*/
+              padding-top: 1px;
+              padding-bottom: 1px;
+              font-size: 8.6px;
+              font-family: Verdana;
+
+            }
+            .classtablefor{
+                border: 3px solid #000000;
+                padding-top : 2px;
+
+            }
+            .footer {
+                page-break-after: always;
+            }
+            .title_center{
+                text-align: right;
+            }
+            .title_middle{
+                text-align: center;
+            }
+            .title_middle1{
+                font-family: arial, sans-serif;
+                font-size: 13px;}
+            .title_middle2{
+                text-align: right;
+                font-family: arial, sans-serif;
+            }
+            h1.uppercase {
+              text-transform: uppercase;
+              text-align: center;
+              font-size: 13px;
+            }
+            .title_right{
+                text-align: right;
+                        }
+            .center {
+                page-break-after: always;
+            }
+
+            .center:last-child {
+                page-break-after: avoid;
+            }
+
+
+</style>
+<body>
+
+{% for i in main %}
+
+<div class="center"style="border: 1px solid #000; padding:5px;">
+    <div id="header_content"style="border: 1px solid #000; padding:2px;">
+              <h1 class="uppercase">LS Dairy Products Pvt Ltd ,{{i.name}}<br>{{i.address}}-{{i.pin}},Contact no:{{i.phone}}</h1>
+          </div>
+               <div id="header_content2" style="">
+                <h2 class="title_middle">Milk Bill Voucher From <b>{{i.datefrom111}}</b> To<b> {{i.dateto11}}</b></h2></div>
+    <div id="header_content3" >
+               <table class="title_middle1">
+                   <tr>
+                       <th class="title_left" >&nbsp; &nbsp;  Center  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; :&nbsp;&nbsp; {{i.centercode}} <br>
+                           &nbsp; &nbsp;  Name      &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :&nbsp;&nbsp; {{i.centername}}<br>
+                           &nbsp; &nbsp;  Account No &nbsp; &nbsp; &nbsp; :&nbsp;&nbsp; {{i.bankno}}<br>                        
+                        </th>
+                       <th>
+                           <br>
+                           <br>
+                           <br>
+                       </th>
+
+
+                       <th>
+                        Route &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; : &nbsp; &nbsp; &nbsp;&nbsp;  {{i.route_number}} / {{i.routename}}<br>
+                        Mobile &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; :&nbsp;&nbsp; &nbsp; &nbsp;  {{i.mobile}}<br>
+                        IFSC &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; :&nbsp;&nbsp; &nbsp; &nbsp;  {{i.ifsc}}
+                       </th>
+                       
+                   </tr>
+               </table>
+                
+               
+    </div>
+        </head>
+        <body>     
+               
+            <table class="css-serial">
+                <!--<tr style = 'background-color: #69bc5f;color: white;'>-->
+                <tr>
+                    <th class="title_middle"  width="4%"style="border: 1px solid black;">S.No</th>
+                    <th class="title_middle"  width="10%"style="border: 1px solid black;">Milk Date</th>
+                   
+                    <th class="title_center" width="7%"style="border: 1px solid black;">Shift</th>
+                    <th class="title_center" width="7%"style="border: 1px solid black;">Type</th>
+
+
+                  
+                    <th class="title_center" width="10%"style="border: 1px solid black;">KGS</th>
+                    <th class="title_center" width="10%"style="border: 1px solid black;">Ltrs</th>
+                    <th class="title_center" width="9%"style="border: 1px solid black;">FAT</th>
+                    <th class="title_center" width="10%"style="border: 1px solid black;">SNF</th>
+                    <th class="title_center" width="13%"style="border: 1px solid black;">Rate / Ltr</th>
+                    <th class="title_center" width="12%"style="border: 1px solid black;">Amount</th>
+                   
+                    <th class="title_center" width="10%"style="border: 1px solid black;">P&I Exp</th>
+                    <th class="title_center" width="12%"style="border: 1px solid black;">TOTAL</th>                
+                </tr>
+
+
+        
+                {% for dc_1 in i.data %}
+                <tr>
+                     <td  style="text-align:center !important">&nbsp;</td>
+                    <td class="title_middle" width="10%"style="border: 1px solid black;">{{dc_1.date|date:'d  -  m  -  Y'}}</td>
+                    
+                    <td class="title_center" width="14%"style="border: 1px solid black;">{{dc_1.shift}}</td>
+                    <td class="title_center" width="7%"style="border: 1px solid black;">{{dc_1.milk_type}}</td>
+
+
+                    
+                   
+                    <td class="title_center"  width="10%"style="border: 1px solid black;">{{dc_1.kgs|floatformat:2}}</td>
+                    <td class="title_center" width="10%"style="border: 1px solid black;">{{dc_1.ltrs|floatformat:2}}</td>
+                    <td class="title_center" width="9%"style="border: 1px solid black;">{{dc_1.fat|floatformat:2}}</td>
+                    <td class="title_center" width="10%">{{dc_1.snf|floatformat:2}}</td>
+                    <td class="title_center"  width="13%"style="border: 1px solid black;">{{dc_1.ltrrate|floatformat:2}}</td>
+                    <td class="title_center" width="12%"style="border: 1px solid black;">{{dc_1.amount|floatformat:2|floatformat:2}}</td>
+                    
+                    <td class="title_center" width="10%"style="border: 1px solid black;">{{dc_1.pel|floatformat:2}}</td>
+                    <td class="title_center" width="12%"style="border: 1px solid black;">{{dc_1.net|floatformat:2}}</td>
+                </tr>
+                {% endfor %}
+                
+            <tr>
+                        <td class="title_middle" width="4%"></td>
+                        <td class="title_middle" width="15%"><b>Total</b></td>
+
+                        <td class="title_middle" width="7%"></td>
+                        <td class="title_middle" width="7%"></td>
+                        
+                        <td class="title_center" width="10%"style="border: 1px solid black;"><b>{{i.total_kgssum_detail|floatformat:2}}</b></td>
+                        <td class="title_center" width="10%"style="border: 1px solid black;"><b>{{i.total_ltrssum_detail|floatformat:2}}</b></td>
+                        <td class="title_center" width="9%"style="border: 1px solid black;"><b>{{i.total_fatsum_detail|floatformat:2}}</b></td>
+                        <td class="title_center" width="10%"style="border: 1px solid black;"><b>{{i.total_snfsum_detail|floatformat:2}}</b></td>
+                        <td class="title_center" width="13%"style="border: 1px solid black;"><b>{{i.total_milkvalue|floatformat:2}}</b></td>
+                        <td class="title_center" width="12%"style="border: 1px solid black;"><b>{{i.total_amountsum_detail|floatformat:2}}</b></td>
+                        <td class="title_center" width="10%"style="border: 1px solid black;"><b>{{i.total_pelsum_detail|floatformat:2}}</b></td>
+                        <td class="title_center" width="12%"style="border: 1px solid black;"><b>{{i.total_totalsum_detail|floatformat:2}}</b></td>
+                    </tr>
+
+
+
+        </table>
+
+
+    <br>
+    <br>
+    {% if i.valuecount < 32  or  i.valuecount > 47 and i.valuecount < 80 or i.valuecount > 96 and i.valuecount < 128   %}
+     <table>
+        <tr>
+            <th>Additions<br>-------------------------------------</th>
+            <th></th><th></th><th></th>
+            <th>Recoveries<br>-------------------------------------</th>
+            <th></th><th></th><th></th>
+            <th>Bill Details<br>-------------------------------------</th>
+            <th></th><th></th>
+        </tr>
+        <tr>
+            <th>Auto Fine  <br>  
+                Cartage <br>
+             Others  <br>
+             Arrears<br>
+             Commission<br>
+             
+         ----------------------------------------------
+         <br>     Total     <br>
+     -------------------------------------------
+    <br>
+
+    <br>
+    <br> Milk Value/Ltr<br>
+    Avg. Per Day<br>
+
+    </th>
+     <th width="3%">
+         :<br>
+         :<br>
+         :<br>
+         :<br>
+         :<br>
+         
+         ---
+         <br>  <br>
+         ---
+          <br> <br> <br>: <br>
+           :<br>
+     </th>
+     <th class="title_right" width="9%">
+        
+         {{i.autofine|floatformat:2}}<br>
+         {{i.cartage|floatformat:2}}<br>
+         {{i.aothers|floatformat:2}}<br>
+         {{i.aarrears|floatformat:2}}<br>
+        {{i.commission|floatformat:2}}<br>
+         
+        -----------<br>
+         {{i.total_additions|floatformat:2}}<br>
+        -------------
+         <br> <br> <br>
+         {{i.total_milkvalue|floatformat:2}}<br>
+         {{i.total_rateltr|floatformat:2}}<br>
+
+     </th><th width="3%"></th>
+            <th> Stationary   <br>
+                Cattle Feed    <br>
+                Seed           <br>
+               EMT          <br>
+                Vet.medicine    <br>
+                Insurance    <br>
+                Stores      <br>
+                Loans      <br>
+                Others     <br>
+                Arrears <br>
+                ---------------------------------------<br>
+                Total<br>
+                ----------------------------------------
+            </th>
+            <th width="3%">
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                ---<br>
+                :<br>
+                ---<br>
+            </th>
+            <th class="title_right" width="12%">
+                
+                 {{i.stationary|floatformat:2}}<br>
+                 {{i.cattlefeed|floatformat:2}}<br>
+                 {{i.seed|floatformat:2}}<br>
+               {{i.emtcharges|floatformat:2}}<br>
+               {{i.medicine|floatformat:2}}<br>
+               {{i.insurance|floatformat:2}}<br>
+               {{i.stores|floatformat:2}}<br>
+               {{i.instamt|floatformat:2}}<br>
+               {{i.rothers|floatformat:2}}<br>
+              {{i.aarrears|floatformat:2}}<br>
+                ------------------------<br>
+                 {{i.total_recoveries|floatformat:2}}<br>
+                -----------------------
+                
+            </th><th width="6%"></th>
+            <th >
+                Milk Value     <br>
+                P&I Exp.     <br>
+                Additions          <br>
+                --------------------------------<br>
+                Gross Amount ...  <br>
+                <br><br><br><br>
+                Recoveries ...    <br>
+                ---------------------------------<br>
+                Net Payable ...  <br>
+                --------------------------------<br>
+
+            </th>
+            <th width="2%"><br>
+                :<br>
+                :<br>
+                :<br>
+                --------<br>
+                :<br>
+                <br><br><br><br>
+                :<br>
+                --------<br> 
+                :<br>
+                --------<br></th>
+            <th class="title_right" width="10%">
+                  {{i.total_amountsum_detail|floatformat:2}}<br>
+                    {{i.total_pelsum_detail|floatformat:2}}<br> 
+                     {{i.total_additions|floatformat:2}} <br>
+                 -------------------<br>
+                   {{i.total_totalsum1|floatformat:2}}<br>
+                   <br><br><br><br>
+                   {{i.total_recoveries|floatformat:2}}<br>
+                 -------------------<br>
+                   {{i.total_netvalue|floatformat:2}} <br>
+                 -------------------
+
+
+            </th>
+        </tr>
+        
+    </tfoot>
+
+    </table>
+
+    {%else%}
+    
+    <table>
+    
+        <tr>
+            <th>Additions<br>-------------------------------------</th>
+            <th></th><th></th><th></th>
+            <th>Recoveries<br>-------------------------------------</th>
+            <th></th><th></th><th></th>
+            <th>Bill Details<br>-------------------------------------</th>
+            <th></th><th></th><th></th>
+        </tr>
+        <tr>
+            <th>Auto Fine  <br>  
+                Cartage <br>
+             Others  <br>
+             Arrears<br>
+             Commission<br>
+             
+         ----------------------------------------------
+         <br>     Total     <br>
+     -------------------------------------------
+    <br>
+
+    <br>
+    <br> Milk Value/Ltr<br>
+    Avg. Per Day<br>
+
+    </th>
+     <th width="3%">
+         :<br>
+         :<br>
+         :<br>
+         :<br>
+         :<br>
+         
+         ---
+         <br>  <br>
+         ---
+          <br> <br> <br>: <br>
+           :<br>
+     </th>
+     <th class="title_right" width="9%">
+        
+         {{i.autofine|floatformat:2}}<br>
+         {{i.cartage|floatformat:2}}<br>
+         {{i.aothers|floatformat:2}}<br>
+         {{i.aarrears|floatformat:2}}<br>
+        {{i.commission|floatformat:2}}<br>
+         
+        -----------<br>
+         {{i.total_additions|floatformat:2}}<br>
+        -------------
+         <br> <br> <br>
+         {{i.total_milkvalue|floatformat:2}}<br>
+         {{i.total_rateltr|floatformat:2}}<br>
+
+     </th><th width="3%"></th>
+            <th> Stationary   <br>
+                Cattle Feed    <br>
+                Seed           <br>
+               EMT          <br>
+                Vet.medicine    <br>
+                Insurance    <br>
+                Stores      <br>
+                Loans      <br>
+                Others     <br>
+                Arrears <br>
+                ---------------------------------------<br>
+                 <br>
+                ----------------------------------------
+            </th>
+            <th width="3%">
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                :<br>
+                ---<br>
+                :<br>
+                ---<br>
+            </th>
+            <th class="title_right" width="12%">
+                
+                 {{i.stationary|floatformat:2}}<br>
+                 {{i.cattlefeed|floatformat:2}}<br>
+                 {{i.seed|floatformat:2}}<br>
+               {{i.emtcharges|floatformat:2}}<br>
+               {{i.medicine|floatformat:2}}<br>
+               {{i.insurance|floatformat:2}}<br>
+               {{i.stores|floatformat:2}}<br>
+               {{i.instamt|floatformat:2}}<br>
+               {{i.rothers|floatformat:2}}<br>
+              {{i.aarrears|floatformat:2}}<br>
+                ------------------------<br>
+                 {{i.total_recoveries|floatformat:2}}<br>
+                -----------------------
+                
+            </th><th width="6%"></th>
+            <th >
+                Milk Value     <br>
+                P&I Exp.     <br>
+                Additions          <br>
+                --------------------------------<br>
+                Gross Amount   <br>
+                <br><br><br><br>
+                Recoveries     <br>
+                ---------------------------------<br>
+                Net Payable   <br>
+                --------------------------------<br>
+
+            </th>
+            <th width="2%"><br>
+                :<br>
+                :<br>
+                :<br>
+                --------<br>
+                :<br>
+                <br><br><br><br>
+                :<br>
+                --------<br>
+                :<br>
+                --------<br></th>
+            <th class="title_right" width="10%">
+                  {{i.total_amountsum_detail|floatformat:2}}<br>
+                    {{i.total_pelsum_detail|floatformat:2}}<br> 
+                     {{i.total_additions|floatformat:2}} <br>
+                 -------------------<br>
+                   {{i.total_totalsum1|floatformat:2}}<br>
+                   <br><br><br><br>
+                   {{i.total_recoveries|floatformat:2}}<br>
+                 -------------------<br>
+                   {{i.total_netvalue|floatformat:2}} <br>
+                 -------------------
+
+
+            </th><th></th> 
+            </tr>
+            </table> 
+        
+            {% endif %} 
+            <br>
+            <br>
+            <div id="header_content4" >
+            <table>
+                <tr>
+                <th>Report Generated By:</th>
+                <th>{{i.user}}</th><th></th>
+                <th style="text-align: right;">{{i.timedate}}</th>
+                <th></th>
+                <th> #Rec:{{i.rec}} </th>
+            </tr>
+            </table>
+            </div>   
+    </div>
+
+
+{% endfor %}
+
+
+
+    </body>
+
+
+
+</html>

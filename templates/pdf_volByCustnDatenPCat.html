@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<head>
+        <style>
+            table {
+              font-family: arial, sans-serif;
+              border-collapse: collapse;
+              width: 100%;
+            }
+
+            td, th {
+              border: 0px solid #dddddd;
+              text-align: center;
+              /*padding: 8px;*/
+              padding-top: 7px;
+              padding-bottom: 8px;
+            }
+            .title_middle{text-align: center;
+            }
+            .title_middle1{
+            font-family: arial, sans-serif;
+            font-size: 15px;}
+            .title_middle2{text-align: right;
+            font-family: arial, sans-serif;
+            }
+            h1.uppercase {
+  text-transform: uppercase;
+  text-align: center;
+}
+            
+
+        </style>
+
+            <h2 style="text-align:center;">Volume by Customer & Date & Product Category   {{datefrom1}} {{aa}} {{dateto1}}<br>
+                Order No : {{orderNo}} <br>  Customer : {{custcode}}-{{custNameP2}}
+           
+
+          
+            </h2>
+        <br>
+        
+  <body>
+        
+         <table>
+           
+                <hr>
+                    <tr>
+                        <th width="20%" style="text-align: center;">S.NO</th>
+                        {% if custNameP2 == 'ALL' %}
+                        <th width="20%" class="school_activity">Customer{{custNameP2}}</th>
+                        {% endif %}
+                        <th width="20%" class="school_activity">Date</th>
+                        <th width="20%" class="school_activity">Prod Category</th>
+                        <th width="20%" class="school_activity">Quantity</th>
+                        <th width="20%" class="school_activity">Amount</th>
+                        <th width="20%" class="school_activity">Discount</th>
+                        <th width="20%" class="school_activity">Net Amount</th>
+                        
+                        <th width="20%" class="school_activity">Avg Rate</th>
+                        
+                        
+            
+                    </tr>
+                </hr>
+            </thead>
+            </table>
+
+        </div>        
+<hr>
+       <table>
+            <tbody>
+                {% for data in data1 %}
+                <tr>    
+
+                    <td style="text-align:center !important" width="20%">{{forloop.counter }}</td>
+                    {% if custNameP2 == 'ALL' %}
+                    <td width="20%" style="text-align:left !important">
+                        {{data.custName}}</td>
+                    {% endif %}
+                        <td width="20%" style="text-align:left !important">
+                        {{data.date|date:'d-m-y'}}</td>
+                        {% if data.prodCat == 'HIGH' %}
+                        <td width="20%" style="text-align:left !important">
+                        HFM</td>
+                        {% elif data.prodCat == 'PANE' %}
+                        <td width="20%" style="text-align:left !important">
+                        PANEER</td>
+                        {% else %}
+                        <td width="20%" style="text-align:left !important">
+                        {{data.prodCat}}</td>
+                        {% endif %}
+                        <td width="20%" style="text-align:right !important">{{data.sQty|floatformat:2}}&ensp;</td>
+                        
+                        <td width="20%" style="text-align:right !important">{{data.sAmt|floatformat:2}}&ensp;</td>                     
+                        
+                        <td width="20%" style="text-align:right !important">{{data.sDisc|floatformat:2}}&ensp;</td>
+                        <td width="20%" style="text-align:right !important">{{data.sNAmt|floatformat:2}}&ensp;</td>
+                        <td width="20%" style="text-align:right !important">{{data.avgRate|floatformat:2}}&ensp;</td>
+                        
+                                    
+                        
+                    </tr>
+
+                
+
+                    
+                    {% endfor %}
+
+                    
+                </tbody>
+                <div class="footer">
+                <tfoot class="footer">
+                <tr>
+                <td style="text-align:left !important"><b>Total</b></td>
+                {% if custNameP2 == 'ALL' %}
+                <td style="text-align:right !important">&ensp;</td>
+                {% endif %}
+                <td style="text-align:right !important">&ensp;</td>
+                <td style="text-align:right !important">&ensp;</td>
+                <td style="text-align:right !important">&ensp;</td>
+                <!--<td style="text-align:right !important"><b>{{total_QtySum_detail|floatformat:2}}</b>&ensp;</td>-->
+               
+                <td style="text-align:right !important"><b>{{total_Amountsum_detail|floatformat:2}}</b>&ensp;</td>                              
+                
+                
+                
+                <td style="text-align:right !important"><b>{{total_CommAmtsum_detail|floatformat:2}}</b>&ensp;</td>
+                
+                <td style="text-align:right !important"><b>{{total_NetAmtsum_detail|floatformat:2}}</b>&ensp;</td>
+                <td style="text-align:right !important">&ensp;</td>
+                
+       
+            
+             
+         
+            </table>
+             
+   <!-- <table id="header-fixed"></table>-->
+    </body>
+
+</html>

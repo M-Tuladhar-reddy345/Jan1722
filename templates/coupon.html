@@ -1,0 +1,512 @@
+{% extends "header.html" %}
+{% block title %}JacknJill{% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+<script> 
+    $(document).ready(function() { 
+        $(function() { 
+            $( "#my_date_picker" ).datepicker(); 
+        }); 
+    }) 
+</script> 
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker').val(today);
+});</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+$(document).ready( function() {
+var time = new Date();
+
+  var shift = time.toLocaleString('en-US', { hour: 'numeric', hour12: true });
+  
+  $('#shift').val(shift);
+});</script>
+<!--<script>
+$(document).ready( function() {
+var d = new Date();
+var hours = d.getHours() % 12;
+  hours = hours ? hours : 12;
+    var test =  
+    ("00" + d.getMinutes()).slice(-2) + ":" + 
+    ("00" + d.getSeconds()).slice(-2) + ' ' + (d.getHours() >= 12 ? 'PM' : 'AM'); 
+    
+document.getElementById("demo").innerHTML = test;
+});</script>-->
+<style type="text/css">
+    table 
+    {
+      border-collapse: collapse !important;
+      /*width: 100%;*/
+    }
+td 
+    {
+        border: 1px solid #000000  !important;
+        text-align: left; !important;
+        padding: 6px !important;
+    }
+th{
+    text-align: center !important;
+    padding: 6px !important;
+    border: 1px solid #000000  !important;
+}
+.no_pad{
+    padding-left:0px !important;
+    padding-right: 0px !important;
+}
+.td_border{
+    border:none !important;
+}
+.td_border input{
+    width:55% !important;
+}
+th{
+    
+    color:#000 !important;
+}
+input[type=shift]{
+    width:50px !important;
+}  
+input[type=date]{
+    width:150px !important;
+} 
+input[type=text] {
+    width:100px !important;
+}
+ input{
+    width:70px !important;
+}
+.scroll{
+    overflow-y: auto;
+    overflow-x: auto;
+    height: 200px;
+    margin-top: 0px;
+    width: 100%;
+    white-space: nowrap;
+}
+    
+.scroll thead th {
+    position: sticky;
+    top: 0;
+        
+}
+</style>
+<script>
+    function myFunction() {
+        var bank=document.getElementById("coupon").value; 
+        {
+            document.getElementById("coupon").value = "C";
+        }
+        }
+    </script>
+<div class="container">
+    <h2><b><center> COUPON</center></b></h2>
+    <!--<div style="border:1px solid #dddddd;padding:10px;margin:10px;">-->
+            
+            <div class="col-md-85 col-sm-85 col-xs-85">
+                
+                    <form  method="POST"  action="/coupon/" enctype="">
+                        {% csrf_token %}
+                        <div class="col-md-05 col-sm-07 col-xs-09">
+                            <!--<h6><b>Daily Sale Entries</b></h6>-->
+                            <label><b>Code</b></label>&ensp;
+                            <input type="text" name="CodeE" id="CodeE" onclick="myFunction()">
+
+                            <label><b>Name</b></label>&ensp;
+                            <input type="text" name="NameE" value= " " id="NameE">
+
+                            <label><b>Validity Start Date</b></label>&ensp;
+                            <input type="date" id="datePicker" name="PStDateE" placeholder="Enter YYYY-MM-DD" required="">&emsp;&emsp;
+
+
+                            <label><b>Validity End Date</b></label>&ensp;
+                            <input type="date" id="datePicker1" name="PEndDateE" placeholder="Enter YYYY-MM-DD" required="">&emsp;&emsp;
+
+                        </div>
+                            <br><br>
+                        <!--<div class="col-md-22 col-sm-22 col-xs-22" style="border: 1px solid #dddddd;">-->
+                        
+                            <div class="col-md-15 col-sm-12 col-xs-12  no_pad">     
+
+                            <table class="table display data-table text-nowrap" id =" "  style="width:100%;">
+                                    
+                
+                                <thead class="tableHeadcolor">
+                                    <tr>                                        
+                                        <th  style="background-color: #69bc5f !important;">Value(in Rs.)</th>        
+                                        <th  style="background-color: #69bc5f !important;">Product Code </th>               
+                                        <th  style="background-color: #69bc5f !important;">Discount(%)</th>
+                                        <th  style="background-color: #69bc5f !important;">Quantity From</th>
+                                        <th  style="background-color: #69bc5f !important;">Quantity To</th> 
+                                        <th  style="background-color: #69bc5f !important;">Active</th> 
+                                    </tr>
+                                </thead>
+                                <tbody id='form' class="form-block_1">
+                                    <tr class="odd"  role="row">
+                                        
+                                        <td>&emsp;&emsp;&emsp;&emsp;    
+                                        <input type="text" class="width_percent workflowinputRadius" name="CoupValue[]" step="any" style="text-align:right" id="CoupValue"></td>
+
+                                        <td>&emsp;&emsp;&emsp;&emsp;    
+                                            <select name="PCode[]" id="Code" >
+                                                {% for Prodmaster in Prodmaster %}
+                                                <option value="{{Prodmaster.PCode}}" data-name="{{Prodmaster.PName}}">{{Prodmaster.PCode}}-{{Prodmaster.PName}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="hidden" name="PCode" id="Code">
+                                        </td>  
+                                       
+                                        <td>&emsp;&emsp;&emsp;&emsp;    
+                                        <input type="number" class="width_percent workflowinputRadius" name="discnt[]" step="any" style="text-align:right" id="discnt"></td>
+
+                                        <td>&emsp;&emsp;&emsp;&emsp;    
+                                        <input type="number" class="width_percent workflowinputRadius" name="qty_from[]" step="any" style="text-align:right" id="qty_from"></td>
+
+                                        <td>&emsp;&emsp;&emsp;&emsp;    
+                                        <input type="number" class="width_percent workflowinputRadius" name="qty_to[]" step="any" style="text-align:right" id="qty_to"></td>
+
+                                        <td>&emsp;&emsp;&emsp;&emsp;   
+                                            <select name="active[]" value=" " id="active">
+                                                <option value="Y">Yes</option>
+                                                <option value="N">No</option>
+
+                                            </select>
+                                        </td>
+
+
+                                    </tr>        
+                               </tbody>
+                            </table>
+                        <button type="button" class="btn btn-primary btn-lg"><a class="btn backgroundBlue add-more-btn addDeleteButton">Add</a></button>&emsp;&emsp;
+                                    <button type="submit" class="btn btn-primary btn-lg"  id="submitData" value="" disabled>Submit </button>
+                                    <a type="edit" class="btn btn-primary btn-lg" value="edit"  href="/managecoupon/" >Edit </a>
+                                    <br></br>
+                                <div class ="scroll">
+                            <table class="table display data-table1 text-nowrap" style="width:100%;">
+                                    <tbody id='form' class="form-block_1">   
+                                   </tbody>
+                                </table>
+                        </div>
+             
+                        </div>
+            </div>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            
+        
+        <br>
+        <br>
+        <br>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.getElementById('centre_code').onchange = function() {
+    alert(this.value);
+    }
+    // $(document).on("change", "#centercode", function(){
+ //        var a =  $(this).find(':selected').data('name');
+ //        $("#center_name").val(a);
+ //    });
+    $(document).on("change", "#code_center", function(){
+        var b =  $(this).find(':selected').data('name');
+        
+        $("#route").val(b);
+        
+    });
+    // $(document).on("change", "#code_center", function(){
+    //     var c =  $(this).find(':selected').data('bankname');
+    //     alert(c);
+    //     $("#bankname").val(c);
+    // });
+    // function Amount(val) {
+    //     var fat = document.getElementById('fat').value;
+    //     var qty = document.getElementById('qty').value;
+    //     var snf = document.getElementById('snf').value;
+    //     var rate_min = '{{rate.rate}}';
+    //      var quantity = parseFloat(qty)/parseFloat(1.03);
+    //      var a1 = parseFloat(snf) + parseFloat(fat)
+    //     var rate = ( a1* parseFloat(rate_min))/100;
+    //     var total_amount = parseFloat(rate) * parseFloat(quantity);        
+    //     var amount = document.getElementById('rate');
+    //     var total = document.getElementById('amount');
+    //     total.value = total_amount;
+    //     amount.value = rate;
+    // }
+</script>
+<script>
+    function deleteRow() {
+  document.querySelectorAll('#doctable .select:checked').forEach(e => {
+    e.parentNode.parentNode.remove()
+  });
+}
+//$(document).ready(function(){
+  //  $('#delrow').click(function(){
+    //        $("#doctable input:checkbox").each(function(){
+      //          if (this.checked) {
+        //             $(this).parent().parent().remove();
+          //      }
+            //    return false;  
+
+           // })
+    //});
+    //});
+
+//  $(function(){
+//      $(document).on("click",".deleterows",function(){
+//          var deleterowsfromtable=$(".form-block_1 input:checked").parents("tr").remove();
+//      });
+//  });
+</script>
+
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.add-more-btn').click(function() {
+            /*var clone = $('.form-block_1:first').clone();
+            $('#form-new').append(clone);*/
+            var $tableBody = $('.data-table ').find("tbody"),
+            $trFirst = $tableBody.find("tr:first");
+            $trNew = $trFirst.clone();
+            $trFirst.after($trNew);
+           
+            $trNew.find("#Code").val( $trFirst.find("#Code").val());
+            $trNew.find("#code_center").val( $trFirst.find("#code_center").val());
+           
+        
+            var $tableBody1 = $('.data-table1 ').find("tbody");
+            ($trNew).attr("readonly", true);
+            ($trNew).each(function () {
+                   $(this).children("td").each(function () {
+                        $(this).find("input").prop("readonly", true);
+                    
+                        //$(this).find("input");
+                   });
+
+               });
+            var rowCount = $('.data-table1 tr').length+1;
+            ($trNew).prepend($('<td>').append(rowCount));
+            $tableBody1.prepend($trNew);
+            $("#submitData").prop('disabled', false); //enable
+
+            
+        });
+    });
+   
+
+</script>
+</script>
+                                    
+                                       
+<script>
+function myFunction() {
+  document.getElementById("snf").value = (((document.getElementById("clr").value)/4) +(0.21*(document.getElementById("fat").value))+0.36).toFixed(2) ;
+}
+
+</script>
+<script type="text/javascript">
+    function myError(){
+        var snf=document.getElementById("snf").value;
+        if(snf != (((document.getElementById("clr").value)/4) +(0.21*(document.getElementById("fat").value))+0.36) || snf == "").toFixed(2) {
+
+    alert("Enter Correct SNF")
+
+  } 
+    }
+</script>
+
+                                    </tr>        
+                               </tbody>
+                            </table>
+                
+                        </div>
+            
+            </div>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    
+            
+
+            
+        </form> 
+        <br>
+        <br>
+        <br>
+        <br>
+        
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).on("change", "#centercode", function(){
+        var a =  $(this).find(':selected').data('name');
+        $("#center_name").val(a);
+    });
+    function Amount(val) {
+        /*alert("hi");*/
+        var fat = document.getElementById('fat').value;
+        var qty = document.getElementById('qty').value;
+        var snf = document.getElementById('snf').value;
+        var rate_min = '{{rate.rate}}';
+        var quantity = parseFloat(qty)/parseFloat(1.03);
+        var a1 = parseFloat(snf) + parseFloat(fat)
+        var rate = ( a1* parseFloat(rate_min))/100;
+        var total_amount = parseFloat(rate) * parseFloat(quantity);        
+        var amount = document.getElementById('rate');
+        var total = document.getElementById('amount');
+        total.value = total_amount;
+        amount.value = rate;
+    }
+</script>
+<script type="text/javascript">
+    var field = document.querySelector('#today');
+    var date = new Date();
+
+    // Set the date
+    field.value = date.getFullYear().toString() + '-' + (date.getMonth() + 1).toString().padStart(2, 0) + 
+        '-' + date.getDate().toString().padStart(2, 0);
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("Code").value = localStorage.getItem("Code");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("Code",document.getElementById("Code").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("CoupValue").value = localStorage.getItem("CoupValue");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("CoupValue",document.getElementById("CoupValue").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("CodeE").value = localStorage.getItem("CodeE");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("CodeE",document.getElementById("CodeE").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("NameE").value = localStorage.getItem("NameE");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("NameE",document.getElementById("NameE").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("discnt").value = localStorage.getItem("discnt");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("discnt",document.getElementById("discnt").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("qty_from").value = localStorage.getItem("qty_from");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("qty_from",document.getElementById("qty_from").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("qty_to").value = localStorage.getItem("qty_to");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("qty_to",document.getElementById("qty_to").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("fat").value = localStorage.getItem("fat");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("fat",document.getElementById("fat").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("clr").value = localStorage.getItem("clr");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("clr",document.getElementById("clr").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("snf").value = localStorage.getItem("snf");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("snf",document.getElementById("snf").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("datePicker").value = localStorage.getItem("datePicker");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("datePicker",document.getElementById("datePicker").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("datePicker1").value = localStorage.getItem("datePicker1");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("datePicker1",document.getElementById("datePicker1").value);
+  });
+
+</script>
+
+
+{% endblock %}

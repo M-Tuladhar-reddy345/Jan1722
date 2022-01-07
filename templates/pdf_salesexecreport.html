@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<style>
+			table {
+			  font-family: arial, sans-serif;
+			  border-collapse: collapse;
+			  width: 100%;
+			}
+
+			td, th {
+			  border: 1px solid #dddddd;
+			  text-align: center;
+			  /*padding: 8px;*/
+			  padding-top: 8px;
+			  padding-bottom: 8px;
+			}
+			.title_middle{text-align: center;}
+		</style>
+	</head>
+	<body>
+			<h2 class="title_middle">Sales Exective  Report</h2>
+			<p class="title_middle">Slaes Code : {{SEcode}}<br>
+			<p class="title_middle">Active: {{active}}<br>
+
+
+		   </p><br>
+		<table>
+            <tr>
+            		<th  class="school_activity">S.NO</th>
+						<th  class="school_activity"> Code</th>
+                        <th  class="school_activity"> Name</th>
+                        <th  class="school_activity">Join Date</th>
+						<th  class="school_activity">Last Date</th>
+						<th width="13%" class="school_activity">Zone_attached </th>
+						<th width ="13%" class="school_activity">Zone_attached 1</th>
+						<th width="13%" class="school_activity">Zone_attached 2</th>
+						<th  class="school_activity">Active</th>
+	            
+                       
+			</tr>
+			{% for al in data %}
+					<tr>
+
+                        <td >{{ forloop.counter }}</td>     
+						<td style="text-align:center !important">{{al.SEcode}}</td>
+						<td style="text-align:center !important">{{al.SEname}}</td>
+						<td style="text-align:center !important">{{al.SEJoinDate |date:'d-m-Y'}}</td>
+						<td style="text-align:center !important">{{al.SELastDate |date:'d-m-Y'}}</td>
+						<td style="text-align:center !important">{{al.Zone_attached }}</td>
+						<td style="text-align:center !important" width="15%">{{al.Zone_attached1}}</td>
+						<td style="text-align:center !important">{{al.Zone_attached2}}</td>
+						<td style="text-align:center !important">{{al.active}}</td>
+                       
+					</tr>
+			{% endfor %}
+		
+	
+		
+		</table>
+	</body>
+</html>

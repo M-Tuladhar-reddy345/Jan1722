@@ -1,0 +1,354 @@
+{% extends "header.html" %}
+{% block title %}JacknJill{% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% block content %}
+<link href='https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css' rel='stylesheet'> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"> </script> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"> </script>
+<script> 
+    $(document).ready(function() { 
+        $(function() { 
+            $( "#my_date_picker" ).datepicker(); 
+        }); 
+
+    }) 
+	$( ".start_date" ).datepicker({
+	  defaultDate: +7
+	});
+	  
+</script> 
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker').val(today);
+});</script>
+<style>
+
+	th , td{
+		text-align: center !important;
+		padding: 8px !important;
+		border: 1px solid black !important;
+	}
+	/*.scrollable{
+		overflow: scroll;
+		height: 500px;
+	}*/
+	.scroll{
+  		overflow-y: auto;
+  		overflow-x: auto;
+		height: 400px;
+		margin-top: -5px;
+		width: 100%;
+		white-space: nowrap;
+	}
+	
+	.scroll thead th {
+	    position: sticky;
+        top: 0;
+        
+	}
+	.footer{
+		position: sticky;
+		bottom: 0;
+		background-color: #69bc5f !important;
+		color:  #fff;
+	}
+
+	.titledash{
+		width:  100%;
+		height:  50px;
+		text-align: center;
+		text-transform: capitalize;
+		background-color: #5d50c6 !important;
+		color:  #fff;
+		font-size: 30px;
+		font-weight: bold;
+	}
+
+	
+	
+	
+	</style>
+
+<div class="container ">
+	<div class="row">
+		<div  class="col-sm-12 col-md-12 col-xs-12">
+			<br>
+			
+			
+			<!--<br><button type="button"><a href="/customeroutstanding/pdf1/{{datefrom}}/{{dateto}}/{{orderNo}}/{{custcode}}/{{selecting}}/" target="_blank">O/S report in PDF </a></button>&emsp;-->
+			
+			<button type="button"><a href="/dateWiseReceipt/{{datefrom}}/{{dateto}}/{{orderNo}}/{{custcode}}/{{selecting}}/" target="_blank"> Excel Download</a></button><br>
+			
+			<form method="POST" action="" enctype=""><br>
+				{% csrf_token %}
+				<label><b>Report By</b></label>&emsp;
+                  <select name="Issued_to"  id="Issuedto" onchange="changeDropdown()">
+                  <!--<option value="Dtls" >All Detail</option>
+                  <option value="Day" >Day</option>
+                  <option value="orderWise" >Order Wise</option>-->
+                  
+                  <option value="entrydate" >Entry Date</option>
+
+                  <option value="recdate" >Receipt Date</option>
+                  <!--<option value="zoneWise" >Zone</option>
+                  <option value="SEWise" >Sales Exec</option>-->
+                  
+                  </select><br>
+
+				<label for="fname"><b>From Date</b></label>
+				<input class="border_right " type="date" onfocus="(this.type='date')" onblur="(this.type='date')" id="my_date_picker" name="datefrom" placeholder="Enter MM/DD/YYYY" required="" value="{{start_of_m|date:'Y-m-d'}}">
+				<!--<input class="border_foot start_date" type="date" id="my_date_picker" name="date_from" placeholder="Enter MM/DD/YYYY" required="">-->
+				<label for="fname"><b>To Date</b> </label>
+				<input class="border_right" type="date" onfocus="(this.type='date')" onblur="(this.type='date')" id="my_date_picker1" name="dateto" placeholder="Enter MM/DD/YYYY" value="{{end_of_m|date:'Y-m-d'}}" required="">
+				<!--<input class="border_foot" type="date" id="my_date_picker" name="date_to" placeholder="Enter MM/DD/YYYY" required="">-->
+				<!--<label for="fname"> <b>Order No</b></label>
+				<select name="orderNo" id="orderNo">
+				    <option value="all">All</option>
+
+				    {% for DailySales in DailySales %}
+						    <option value="{{DailySales.orderNo}}">{{DailySales.orderNo}}</option>
+				  	{% endfor %}
+			  	</select>-->
+			  	<label for="fname"><b>Customer</b>  </label>
+				<select name="custcode" id="custcode">
+				    <option value="all">All</option>
+				    {% for custSales in cs %}
+						    <!--<option value="{{center.centre_code}}">{{center.centre_code}}-{{center.name}}</option>-->
+						    <option value="{{custSales.cCode}}">{{custSales.cName}}</option>
+				  	{% endfor %}
+			  	</select>
+
+			  	
+				  
+				<button type="submit" class="btn btn-primary btn-lg" id="getdata" value=""><b>Get Data</b></button>
+			</form>
+			<br>
+			<body>
+				
+					 <div colspan="3" class="titledash" > {{DateOpt}}  Receipt report   {{datefrom1}} {{aa}} {{dateto1}}  </div>
+					
+				<!--- tula ---->	
+				<div class ="scroll">
+				<table >
+				<thead>
+					<tr>
+						
+						
+						<th width="10%" style="background-color: #69bc5f !important;">Customer</th>
+						{% if selecting == "orderdate" %}
+						<th width="7%" style="background-color: #69bc5f !important;">Amount</th>
+						<th width="7%" style="background-color: #69bc5f !important;">Discount</th>
+						<th width="10%" style="background-color: #69bc5f !important;">Net Amount</th>
+						{% endif %}
+						<th width="10%" style="background-color: #69bc5f !important;">Rec Amount</th>
+						<th width="10%" style="background-color: #69bc5f !important;">Waived-Off </th>
+						<!--<th width="10%" style="background-color: #69bc5f !important;">O/s Amount</th>-->
+						<!--<th width="7%" style="background-color: #69bc5f !important;">Coupon / Disc </th>-->
+						<!--<th width="13%" style="background-color: #69bc5f !important;">OrderNo - Date</th>
+						
+						
+						<th width="10%" style="background-color: #69bc5f !important;">Remarks</th>-->
+					</tr>
+				</thead>
+				<!--Model daily_sales - branch,custcode,date,shift,orderNo,prodCode,quantity,couponCode,disc,amount,unitRate,netAmount,ZoneCode,SaleExecCode-->
+				<tbody >
+				<tr>
+				
+				
+
+					
+
+					
+						
+				<tr>					
+					{% for dc1 in ds2 %}
+
+					
+
+					<div >
+					<tr ><!-- class= "{{custcode}}" style="display: none;">-->
+
+						
+						<td width="7%" style="text-align:left !important">{{dc1.custName}}-{{dc1.custcode}}</td>
+						
+						
+						<!--<td width="5%" style="text-align:right !important">{{dc1.sAmt|floatformat:2}}&ensp;</td>						
+						
+						<td width="7%" style="text-align:right !important">{{dc1.sComm|floatformat:2}}&ensp;</td>
+						<td width="7%" style="text-align:right !important">{{dc1.sNAmt|floatformat:2}}&ensp;</td>-->
+						<td width="7%" style="text-align:right !important">{{dc1.rAmt|floatformat:2}}&ensp;</td>
+						<td width="7%" style="text-align:right !important">{{dc1.sWAmt|floatformat:2}}&ensp;</td>
+						<!--<td width="7%" style="text-align:right !important">{{dc1.sOSAmt|floatformat:2}}&ensp;</td>-->
+						<!--<td width="5%"style="text-align:right !important">{{dc.couponCode}} &ensp;- [{{dc.disc|floatformat:1}}&ensp;%]</td>-->
+						<!--<td width="13%">{{dc.orderNo}}-{{dc.date|date:'d/m/y'}}</td>
+						
+						<td width="10%" style="text-align:right !important">{{dc.remarks}}&ensp;</td>	-->					
+						
+					</tr>
+
+				
+
+					
+					{% endfor %}
+
+					
+				</tbody>
+				<div class="footer">
+				<tfoot class="footer">
+				<tr>
+	            <td style="text-align:left !important"><b>Total</b></td>
+	            
+	           
+	            <!--<td style="text-align:right !important"><b>{{total_Amountsum_detail|floatformat:2}}</b>&ensp;</td>	            	            
+	            
+	            
+	            
+	            <td style="text-align:right !important"><b>{{total_CommAmtsum_detail|floatformat:2}}</b>&ensp;</td>
+	            
+	            <td style="text-align:right !important"><b>{{total_NetAmtsum_detail|floatformat:2}}</b>&ensp;</td>-->
+	            
+
+	            <td style="text-align:right !important"><b>{{total_CommRecSum_detail|floatformat:2}}</b>&ensp;</td>
+	            <td style="text-align:right !important"><b>{{total_CommWSum_detail|floatformat:2}}</b>&ensp;</td>
+
+	            
+	            <!-- <td style="text-align:right !important"><b>{{total_CommOsSum_detail|floatformat:2}}</b>&ensp;</td>-->
+	            
+	            
+
+	            
+	          </tr>
+	          </tfoot> 
+	      </div>
+				</tbody>
+			</table>
+			</div>
+			
+			<br>
+		</body>
+		</div>		<br>
+		</div>
+		
+	</div>
+	<br>
+		<br>
+		<br>
+</div>
+<script src="{% static 'js/ajax-jquery.min.js' %}"></script><script>
+
+    $(document).ready(function(){
+    document.getElementById("my_date_picker").value = localStorage.getItem("my_date_picker");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("my_date_picker",document.getElementById("my_date_picker").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("my_date_picker1").value = localStorage.getItem("my_date_picker1");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("my_date_picker1",document.getElementById("my_date_picker1").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("route").value = localStorage.getItem("route");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("route",document.getElementById("route").value);
+  });
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("center").value = localStorage.getItem("center");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("center",document.getElementById("center").value);
+  });
+</script>
+<script type="text/javascript">
+/*$("#displaytable").hide();
+*/
+/*$(document).ready(function(){
+	$("#centerhide").hide()
+		$('#getdata').click(function() {
+			$("#centerhide").show()
+	});
+});*/
+
+$(document).ready(function() {
+	$('.scroll').click(function() {
+		var element = document.getElementById("scroll")
+	});
+    $('[name="start_date"]').val( '{{start_of_yr | date:"m/d/yy"}}' );
+    $('[name="end_date"]').val( '{{end_of_yr | date:"m/d/yy"}}' );
+});
+function toggleClass(id) {
+	 console.log(id);
+    // get the clock
+    document.getElementById(id).getElementsByTagName("tr");
+
+    // get the current value of the clock's display property
+    var displaySetting = idss.style.visibility;
+    console.log(displaySetting + ' + ' + idss)
+    // now toggle the clock and the button text, depending on current state
+    if (displaySetting == 'visibile') {
+      // clock is visible. hide it
+      idss.style.visibility = 'hidden';
+          }
+    else {
+      // clock is hidden. show it
+      idss.style.visibility = 'visibile';
+    }
+
+    console.log(displaySetting + ' + ' + idss)
+  }
+function toggleClass2(id) {
+
+	 console.log(id);
+    // get the clock
+    //var ids = document.getElementById(id);
+    var idss = document.getElementsByClassName(id);
+    console.log(idss.length);
+
+
+    // now toggle the clock and the button text, depending on current state
+    for (i = 0; i < idss.length; i++) {
+
+    if (idss[i].style.display == '') {
+      // clock is visible. hide it
+      idss[i].style.display = 'none';
+          }
+    else {
+      // clock is hidden. show it
+      idss[i].style.display = '';
+    }
+    console.log(idss[i] + idss[i].style.display)
+  }}
+
+</script>
+
+<style type="text/css">
+	
+</style>
+{% endblock %}

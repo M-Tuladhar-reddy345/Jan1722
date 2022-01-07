@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<style>
+			table {
+			  font-family: arial, sans-serif;
+			  border-collapse: collapse;
+			  width: 100%;
+			}
+
+			td, th {
+			  border: 1px solid #dddddd;
+			  text-align: center;
+			  /*padding: 8px;*/
+			  padding-top: 8px;
+			  padding-bottom: 8px;
+			}
+			.title_middle{text-align: center;}
+		</style>
+	</head>
+	<body>
+			<h2 class="title_middle">Customer Report</h2>
+			<p class="title_middle">Customer code :{{custCode}}<br>
+			<p class="title_middle">Active: {{active}}<br>
+
+
+		   </p><br>
+		<table>
+            <tr>
+            	<th class="title_center" width="5%" >S.NO</th>
+                <th class="title_center" width="7%"> Code</th>
+                <th class="title_center" width="8%"> Name</th>
+                <th class="title_center" width="11%">Customer<br> type</th>
+                <th class="title_center" width="11%">Zone Code</th>
+                <th class="title_center" width="13%">Sales Exec</th>
+                <th class="title_center" width="11%">Mobile</th>
+                <th class="title_center" width="15%">Email</th>
+                <th class="title_center" width="13%">Address</th>
+                <!--<th class="title_center" width="12%">Document</th> -->
+                <th class="title_center" width="8%">Distance</th>  
+                <th class="title_center" width="7%">Active</th>   
+			</tr>
+			{% for al in data %}
+					<tr>
+						<td >{{ forloop.counter }}</td>     
+						<td>{{al.custCode}}</td>
+						<td>{{al.custName}}</td>
+						<td>{{al.cust_type}}</td>
+						<td>{{al.zoneCode}}</td>
+						<td>{{al.saleExecCode}}</td>
+						<td>{{al.mobile}}</td>
+						<td width="15%">{{al.email}}</td>
+						<td>{{al.address}}</td>
+						<!--<td>{{al.document}}</td>-->
+						<td>{{al.distance}}</td>
+						<td>{{al.active}}</td>
+                       
+					</tr>
+			{% endfor %}
+		
+	
+		
+		</table>
+	</body>
+</html>

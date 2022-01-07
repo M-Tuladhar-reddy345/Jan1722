@@ -1,0 +1,504 @@
+{% extends "header.html" %}
+{% block title %}JacknJill{% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+<link href='https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css' rel='stylesheet'>
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"> </script> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"> </script>
+<script> 
+   $(document).ready(function() { 
+       $(function() { 
+           $( "#my_date_picker" ).datepicker(); 
+       }); 
+   }) 
+</script> 
+<script>
+   $(document).ready( function() {
+       var now = new Date();
+    
+       var day = ("0" + now.getDate()).slice(-2);
+       var month = ("0" + (now.getMonth() + 1)).slice(-2);
+   
+       var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+   
+   
+      $('#datePicker').val(today);
+   });
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<style type="text/css">
+   table 
+   {
+   border-collapse: collapse !important;
+   /*width: 100%;*/
+   }
+   td 
+   {
+   /*border: 1px solid #dddddd !important;*/
+   text-align: center; 
+   padding: 7px !important;
+   }
+   th{
+   text-align: center !important;
+   padding: 7px !important;
+   /*border: 1px solid #dddddd !important;*/
+   }
+   .no_pad{
+   padding-left:0px !important;
+   padding-right: 0px !important;
+   }
+   .td_border{
+   border:none !important;
+   }
+   .td_border input{
+   width:55% !important;
+   }
+   .btn_delete{
+   padding: 8px 10px;
+   font-size: 10px;
+   text-align: center;
+   width:100px;
+   display: block;
+   background-color: brown;
+   color:#fff;
+   cursor:pointer;
+   }
+   .btn_delete:hover{
+   background-color: rgb(83,4,4);
+   }
+   .btn_submit{
+   padding: 8px 10px;
+   font-size: 10px;
+   text-align: center;
+   width:100px;
+   display: block;
+   background-color: brown;
+   color:#fff;
+   cursor:pointer;
+   }
+   .btn_submit:hover{
+   background-color: rgb(83,4,4);
+   }
+   th{
+   color:#000 !important;
+   }
+   input{
+   width:85px !important;
+   }
+   input[type=date]{
+   width:150px !important;
+   }  
+   .scroll{
+   overflow-y: auto;
+   overflow-x: auto;
+   height: 300px;
+   margin-top: 0px;
+   width: 100%;
+   white-space: nowrap;
+   }
+   .scroll thead th {
+   position: sticky;
+   top: 0;
+   }
+</style>
+<div class="container">
+   <div class="col-md-12 col-sm-12 col-xs-12">
+      <form  method="POST"  action="/manage_dailySales/" enctype="">
+         {% csrf_token %}
+         <h2>
+            <b>
+               <center>Manage Daily Sales </center>
+            </b>
+         </h2>
+         &emsp;
+         <!--<label for="fname"><b>Date </b></label>&ensp;
+            <input type="date"  id="datePicker" name="dateH" placeholder="Enter YYYY/MM/DD" required="" >&emsp;&emsp;
+            -->
+         <!--18-11-21-->
+         <label for="fname"><b>Customer </b>  </label>
+         <select name="custH" id="custH">
+            <!-- <option value="all">All</option>-->
+            {% for salesOrder in salesOrder %}						    
+            <option value="{{salesOrder.custcode}}">{{salesOrder.custName}}-{{salesOrder.custcode}}</option>
+            {% endfor %}
+         </select>
+         <label for="fname"><b> Order Date : </b></label>&ensp;
+         <input type="date"  id="my_date_picker" name="dateF" placeholder="Enter YYYY/MM/DD" required="" >&emsp;
+         <label for="fname"><b> To : </b></label>&ensp;
+         <input type="date"  id="my_date_picker1" name="dateT" placeholder="Enter YYYY/MM/DD" required="" >&emsp;&emsp;				
+         <!--18-11-21-->
+   </div>
+   &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+   <button type="submit" class="btn btn-primary btn-lg" id="getdata" value="">Fetch </button>
+   </form>
+   <br>
+   <br>
+   <!--Declaring new form to submit the matched data of Dok Entry and QC Emtry to Daily Data table.-->
+   <form  method="POST" class='formm' action="/csv_dailysales/" enctype="">
+      {% csrf_token %}
+      <div class="col-md-12 col-sm-12 col-xs-12" id="table_notshow">
+         <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+               <!--	<h3><b><center>Manage Dock </center></b></h3>-->
+               <div class ="scroll">
+                  <table class="css-serial">
+                     <thead class="tableHeadcolor">
+                        <tr>
+                           <th style="background-color: #69bc5f !important;">S.NO</th>
+                           <th style="background-color: #69bc5f !important;">Order No </th>
+                           <th style="background-color: #69bc5f !important;">Date</th>
+                           <th style="background-color: #69bc5f !important;">Product</th>
+                           <th style="background-color: #69bc5f !important;">Quantity</th>
+                           <th style="background-color: #69bc5f !important;">Discount</th>
+                           <th style="background-color: #69bc5f !important;">Rate - Amount - Net Amount</th>
+                           <th style="background-color: #69bc5f !important;">Remarks</th>
+                           <th style="background-color: #69bc5f !important;">Zone</th>
+                           <th style="background-color: #69bc5f !important;">Sales Exec</th>
+                           <th style="background-color: #69bc5f !important;">Customer</th>
+                           <!-- <th style="background-color: #69bc5f !important;">Print Invoice</th> -->
+                        </tr>
+                     </thead>
+                     <tbody id='form' class="form-block_1">
+                        <!--<input type="hidden" maxlength= 10 value="{{date22}}" name="date_t2" >-->
+                        <input type="hidden" name="cust_t2" value="{{cust22}}" >					        	
+                        <input type="hidden" name="date_f2" value="{{date22F}}" >
+                        <input type="hidden" name="date_t2" value="{{date22T}}" >
+                        {% for ds22 in ds22 %}
+                        <tr class="odd data {{ds22.orderNo}}-{{ds22.prodCode}}"  role="row">
+                           <td> &nbsp;</td>
+                           <td>
+                              <input type="button" class="width_percent workflowinputRadius"  value="{{ds22.orderNo}}"  step="any" style="width:50px" required>
+                              <input type="hidden" value="{{ds22.orderNo}}" name="OrderNo[]"  id="order" style="text-align:center">
+                           </td>
+                           <td>
+                              <input type="date" value="{{ds22.date |date:'Y-m-d'}}" name="sdate1[]" style="width:130px !important;">
+                              <input type="hidden" value="{{ds22.id}}" name="dsid1[]" style="text-align:center">
+                           </td>
+                           <td>
+                              <select name="prodcode[]" id="Prod-Code" value="{{ds22.prodCode}}"  style="width:125px">
+                                 <option ></option>
+                                 <option value="{{ds22.prodCode}}"{% if ds22.prodCode == form.ds22.value %} selected{% endif %} selected>{{ds22.prodCode}}</option>
+                                 {% for Prodmaster in Prodmaster %}
+                                 <option value="{{Prodmaster.PCode}}" data-name="{{Prodmaster.PCode}}">{{Prodmaster.PCode}}</option>
+                                 {% endfor %}
+                              </select>
+                           </td>
+                           <td>
+                              <input type="number" class="width_percent workflowinputRadius"  value ="{{ds22.quantity}}" name="qty[]" step="any" style="width:50px">
+                           </td>
+                           <td>
+                              <input type="hidden" name="couponcode[]"  id="coupon" style="width:450px !important;" > 
+                              <input type="number"  name="disc[]"   id="disc" step="any" style="width:50px" value="{{ds22.disc}}">
+                           </td>
+                           <td>
+                              <input type="number" class="width_percent workflowinputRadius"  value ="{{ds22.unitRate}}" readonly name="unitrate[]" step="any" style="width:50px">
+                              <input type="number" class="width_percent workflowinputRadius amt"  value ="{{ds22.amount}}" readonly name="amount[]" step="any" style="width:50px">
+                              <input type="number" class="width_percent workflowinputRadius netamt"  value ="{{ds22.netAmount}}" readonly name="netAmount[]" step="any" style="width:50px">
+                           </td>
+                           <td>
+                              <input type="text"  id="remarks" name="remarks[]"  step="any" style="width:200px !important;" value="{{ds22.remarks}}">
+                              <!--<input type="button" class="width_percent workflowinputRadius"  value ="PRINT INV" readonly name="amount[]" step="any" style="width:50px">-->
+                              <!--<select name="remove[]" value="{{ds22.id}}" style="width:65px">
+                                 <option value="N">No</option>
+                                 <option value="Y">Yes</option>
+                                 </select>-->
+                              <input type="hidden" value="{{ds22.remove}}" name="remove[]" id="remove" />
+                              <input type="hidden" value="{{ds22.branch}}" name="branch11" />
+                           </td>
+                           <td>
+                              <select name="zonecode[]" id="zone"  value="{{ds22.ZoneCode}}" style="width:70px" >
+                                 <option ></option>
+                                 <option value="{{ds22.ZoneCode}}"{% if ds22.ZoneCode == form.ds22.value %} selected{% endif %} selected>{{ds22.ZoneCode}}</option>
+                                 {% for zone in zone %}
+                                 <option value="{{zone.zCode}}">{{zone.zCode}}</option>
+                                 {% endfor %}
+                              </select>
+                           </td>
+                           <td>
+                              <select name="sales[]" id="sale" style="width:75px" value="{{ds22.SaleExecCode}}">
+                                 <option ></option>
+                                 <option value="{{ds22.SaleExecCode}}"{% if ds22.SaleExecCode == form.ds22.value %} selected{% endif %} selected>{{ds22.SaleExecCode}}</option>
+                                 {% for salesexec in salesexec %}
+                                 <option value="{{salesexec.SEcode}}">{{salesexec.SEcode}}</option>
+                                 {% endfor %}
+                              </select>
+                           </td>
+                           <td>
+                              <input type="hidden" value="{{ds22.custcode}}" name="custcode[]" style="text-align:center">
+                              <input type="button"  style="width:350px !important;" 
+                                 value="{{ds22.custcode}}-{{ds22.custName}}">												
+                           </td>
+                        </tr>
+                        {% endfor %}
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </div>
+      </div>
+      &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+      <button type="submit" class="btn btn-primary btn-lg" id="submitData" value=""> Submit</button>
+      <br>
+      <br>
+      <br>
+      <br>
+   </form>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+   $(document).ready(function(){
+   		console.log($(".formm").serialize());
+   	$('.formm').change(function (){
+   		$.ajax({
+   		  type: "POST",
+   		  data: $(".formm").serialize(),
+   		  url: "/amtAndnetAmt/",
+   		  success: document.body
+   }).done(function(data) {
+   	   	
+   	data.forEach((element, index) => {
+	  $tr = $('.'+element.orderNo+'-'+element.prodCode);
+	  
+	  $tr.find('.amt').val(element.amt);
+	  $tr.find('.netamt').val(element.netAmt);
+
+	  console.log(element);
+	});
+   });});})
+   
+   
+</script>
+<script>
+   function myFunction1() { 
+     document.getElementById("snf").value = (((document.getElementById("clr").value)/4) +(0.21*(document.getElementById("fat").value))+0.36).toFixed(2);
+   }
+</script>
+<style>
+   .css-serial {
+   counter-reset: serial-number; 
+   }
+   .css-serial td:first-child:before {
+   counter-increment: serial-number;
+   content: counter(serial-number); 
+   }
+   th{
+   text-align: center !important;
+   }
+</style>
+<script type="text/javascript">
+   var snf = document.getElementsById("y_email")[0].value;
+   alert(try2);
+</script>
+<script>
+   $(document).ready(function(){
+   	$('#delete_btn')click(function(){
+   		if(confirm("Are you sure you want to delete this lists ?")){
+   			var id=[];
+   			$(':checkbox:checked').each(function(i){
+   				id[i]=$(this)val()
+   			})
+   			if(id.length==0){
+   				alert("please select items to delete ?")
+   			}else{
+   				console.log(id)
+   			}
+   		}
+   	})
+   })
+</script>
+<script type="text/javascript">
+   $(document).on("change", "#coupoun", function(){
+          var a =  $(this).find(':selected').data('name');
+          $("#center_name").val(a);
+      });
+   
+      function Amount(val) {
+      	/*alert("hi");*/
+          var fat = document.getElementById('fat').value;
+          var qty = document.getElementById('qty').value;
+          var snf = document.getElementById('snf').value;
+          var rate_min = '{{rate.rate}}';
+         	var quantity = parseFloat(qty)/parseFloat(1.03);
+         	var a1 = parseFloat(snf) + parseFloat(fat)
+          var rate = ( a1* parseFloat(rate_min))/100;
+          var total_amount = parseFloat(rate) * parseFloat(quantity);        
+          var amount = document.getElementById('rate');
+          var total = document.getElementById('amount');
+          total.value = total_amount;
+          amount.value = rate;
+      }
+</script>-->
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+   $(document).ready(function(){
+       $('.add-more-btn').click(function() {
+           /*var clone = $('.form-block_1:first').clone();
+           $('#form-new').append(clone);*/
+           var $tableBody = $('.data-table ').find("tbody"),
+           $trFirst = $tableBody.find("tr:First");
+         $trNew = $trFirst.clone();
+   
+     $trLast.after($trNew);
+   
+       });
+   });
+   
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("custH").value = localStorage.getItem("custH");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("custH",document.getElementById("custH").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("dateF").value = localStorage.getItem("dateF");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("dateF",document.getElementById("dateF").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("dateT").value = localStorage.getItem("dateT");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("dateT",document.getElementById("dateT").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("cust_t2").value = localStorage.getItem("cust_t2");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("cust_t2",document.getElementById("cust_t2").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("date_t2").value = localStorage.getItem("date_t2");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("date_t2",document.getElementById("date_t2").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("Prod-Code").value = localStorage.getItem("Prod-Code");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("Prod-Code",document.getElementById("Prod-Code").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("coupoun").value = localStorage.getItem("coupoun");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("coupoun",document.getElementById("coupoun").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("zone").value = localStorage.getItem("zone");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("zone",document.getElementById("zone").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("sale").value = localStorage.getItem("sale");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("sale",document.getElementById("sale").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("custH").value = localStorage.getItem("custH");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("custH",document.getElementById("custH").value);
+   });
+   
+</script>
+<script src="{% static 'js/ajax-jquery.min.js' %}"></script><script>
+   $(document).ready(function(){
+   document.getElementById("my_date_picker").value = localStorage.getItem("my_date_picker");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("my_date_picker",document.getElementById("my_date_picker").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("my_date_picker1").value = localStorage.getItem("my_date_picker1");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("my_date_picker1",document.getElementById("my_date_picker1").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("dateF").value = localStorage.getItem("dateF");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("dateF",document.getElementById("dateF").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("dateT").value = localStorage.getItem("dateT");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("dateT",document.getElementById("dateT").value);
+   });
+   
+</script>
+<script>
+   $(document).ready(function(){
+   document.getElementById("datePicker").value = localStorage.getItem("datepicker");
+       });
+   
+   $(window).on('beforeunload', function() {
+   localStorage.setItem("datepicker",document.getElementById("datepicker").value);
+   });
+   
+</script>
+{% endblock %}

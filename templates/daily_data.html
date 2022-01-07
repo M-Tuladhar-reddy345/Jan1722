@@ -1,0 +1,267 @@
+   {% extends "header.html" %}
+{% block title %}JacknJill{% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% block content %}
+<link href='https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css' rel='stylesheet'> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"> </script> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"> </script>
+<script> 
+    $(document).ready(function() { 
+        $(function() { 
+            $( "#my_date_picker" ).datepicker(); 
+        }); 
+
+    }) 
+	$( ".start_date" ).datepicker({
+	  defaultDate: +7
+	});
+
+</script> 
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker').val(today);
+});</script>
+<style>
+
+	th , td{
+		text-align: center !important;
+		padding: 8px !important;
+		border: 1px solid black !important;
+	}
+	/*.scrollable{
+		overflow: scroll;
+		height: 500px;
+	}*/
+	.scroll{
+  		overflow-y: auto;
+  		overflow-x: auto;
+		height: 600px;
+		margin-top: -5px;
+		width: 100%;
+		white-space: nowrap;
+	}
+	
+	.scroll thead th {
+	    position: sticky;
+        top: 0;
+        
+	}
+	.footer{
+		position: sticky;
+		bottom: 0;
+		background-color: #69bc5f !important;
+		color:  #fff;
+	}
+
+	.titledash{
+		width:  100%;
+		height:  50px;
+		text-align: center;
+		text-transform: capitalize;
+		background-color: #5d50c6 !important;
+		color:  #fff;
+		font-size: 30px;
+		font-weight: bold;
+	}
+
+	
+	
+	
+	</style>
+
+<div class="container ">
+	<div class="row">
+		<div  class="col-sm-12 col-md-12 col-xs-12">
+			<br>
+			
+			
+			<br><button type="button"><a href="/daily/pdf1/{{datefrom}}/{{dateto}}/{{routecode}}/{{centercode}}/" target="_blank"> PDF Download</a></button>&emsp;
+			
+			<button type="button"><a href="/excel1/{{datefrom}}/{{dateto}}/{{routecode}}/{{centercode}}/" target="_blank"> Excel Download</a></button><br>
+			
+			<form method="POST" action="" enctype=""><br>
+				{% csrf_token %}
+				<label for="fname"><b>From Date</b></label>
+				<input class="border_right " type="date" onfocus="(this.type='date')" onblur="(this.type='date')" id="my_date_picker" name="datefrom" placeholder="Enter MM/DD/YYYY" required="" value="{{start_of_m|date:'Y-m-d'}}">
+				<!--<input class="border_foot start_date" type="date" id="my_date_picker" name="date_from" placeholder="Enter MM/DD/YYYY" required="">-->
+				<label for="fname"><b>To Date</b> </label>
+				<input class="border_right" type="date" onfocus="(this.type='date')" onblur="(this.type='date')" id="my_date_picker1" name="dateto" placeholder="Enter MM/DD/YYYY" value="{{end_of_m|date:'Y-m-d'}}" required="">
+				<!--<input class="border_foot" type="date" id="my_date_picker" name="date_to" placeholder="Enter MM/DD/YYYY" required="">-->
+				<label for="fname"> <b>Route</b></label>
+				<select name="routecode" id="route">
+				    <option value="all">All</option>
+
+				    {% for route in route %}
+						    <option value="{{route.Route_number}}">{{route.Route_number}}-{{route.Route_name}}</option>
+				  	{% endfor %}
+			  	</select>
+			  	<label for="fname"><b>Center</b>  </label>
+				<select name="centercode" id="center">
+				    <option value="all">All</option>
+				    {% for center in center %}
+						    <!--<option value="{{center.centre_code}}">{{center.centre_code}}-{{center.name}}</option>-->
+						    <option value="{{center.centre_code}}">{{center.centre_code}}</option>
+				  	{% endfor %}
+			  	</select>
+				  
+				<button type="submit" class="btn btn-primary btn-lg" id="getdata" value=""><b>Get Data</b></button>
+			</form>
+			<br>
+			<body>
+				
+					 <div colspan="13" class="titledash" > Daily Milk Procurement Data   {{datefrom1}} {{aa}} {{dateto1}} </div>
+					
+					
+				<div class ="scroll">
+				<table >
+				<thead>
+					<tr>
+						<th width="10%" style="background-color: #69bc5f !important;">Route</th>
+						
+						<th width="10%" style="background-color: #69bc5f !important;">Date</th>
+						<th width="6%" style="background-color: #69bc5f !important;">Shift/Type</th>
+						<th width="13%" style="background-color: #69bc5f !important;">Center</th>
+						<th width="7%" style="background-color: #69bc5f !important;">QTY (Kgs)</th>
+						<th width="7%" style="background-color: #69bc5f !important;">QTY (Ltrs)</th>
+						<th width="5%" style="background-color: #69bc5f !important;">FAT</th>
+						
+						<th width="5%" style="background-color: #69bc5f !important;">SNF</th>
+						<th width="7%" style="background-color: #69bc5f !important;">Rate/Ltr</th>
+						<th width="7%" style="background-color: #69bc5f !important;">TS Rate</th>
+						<th width="7%" style="background-color: #69bc5f !important;">P&I Rate</th>
+						<th width="7%" style="background-color: #69bc5f !important;">P&I Amt</th>
+						<th width="10%" style="background-color: #69bc5f !important;">Amount</th>
+						
+						<!--<th width="10%" >Receviable</th>
+						<th width="10%" >Payment</th>-->
+					</tr>
+				</thead>
+				
+				<tbody >
+					{% for dc in dc %}
+					<tr>
+						<td width="10%">{{dc.routecode}}-{{dc.routename}}</td>
+						<td width="10%">{{dc.date|date:'d-m-Y'}}</td>
+						<td width="6%">{{dc.shift}}/{{dc.milk_type}}</td>
+						
+						<td width="13%">{{dc.centercode}}-{{dc.centername}}</td>
+						<td width="7%" style="text-align:right !important">{{dc.qty|floatformat:2}}&ensp;</td>
+						<td width="7%" style="text-align:right !important">{{dc.ltrs|floatformat:2}}&ensp;</td>
+						<td width="5%" style="text-align:right !important">{{dc.fat|floatformat:2}}&ensp;</td>						
+						<td width="5%"style="text-align:right !important">{{dc.snf|floatformat:2}}&ensp;</td>
+						<td width="7%" style="text-align:right !important">{{dc.ltrrate|floatformat:2}}&ensp;</td>
+						<td width="7%" style="text-align:right !important">{{dc.tsrate|floatformat:2}}&ensp;</td>
+						<td width="7%" style="text-align:right !important">{{dc.comm|floatformat:2}}&ensp;</td>
+						<td width="7%" style="text-align:right !important">{{dc.pel|floatformat:2}}&ensp;</td>
+						<td width="10%" style="text-align:right !important">{{dc.net|floatformat:2}}&ensp;</td>						
+					</tr>
+					{% endfor %}
+
+				<div class="footer">
+				<tfoot class="footer">
+				<tr>
+	            <td style="text-align:left !important"><b>Total</b></td>
+	            <td style="text-align:right !important"></td>
+	            
+	            <td style="text-align:right !important"></td>
+	            <td></td>
+	            <td style="text-align:right !important"><b>{{total_kgssum_detail|floatformat:2}}</b>&ensp;</td>
+	            <td style="text-align:right !important"><b>{{total_ltrssum_detail|floatformat:2}}</b>&ensp;</td>
+	            <td style="text-align:right !important"><b>{{total_fatsum_detail|floatformat:2}}</b>&ensp;</td>	            
+	            <td style="text-align:right !important"><b>{{total_snfsum_detail|floatformat:2}}</b>&ensp;</td>
+	            <td style="text-align:right !important"><b>{{total_ratesum_detail|floatformat:2}}</b>&ensp;</td>
+	            <td style="text-align:right !important"><b>{{total_tsratesum_detail|floatformat:2}}</b>&ensp;</td>
+	            <td style="text-align:right !important"><b>{{total_commsum_detail|floatformat:2}}</b>&ensp;</td>
+	            <td style="text-align:right !important"><b>{{total_pelsum_detail|floatformat:2}}</b>&ensp;</td>
+	            <td style="text-align:right !important"><b>{{total_totalsum_detail|floatformat:2}}</b>&ensp;</td>	            
+	          </tr>
+	          </tfoot> 
+	      </div>
+				</tbody>
+			</table>
+			</div>
+			
+			<br>
+		</body>
+		</div>		<br>
+		</div>
+		
+	</div>
+	<br>
+		<br>
+		<br>
+</div>
+<script src="{% static 'js/ajax-jquery.min.js' %}"></script><script>
+
+    $(document).ready(function(){
+    document.getElementById("my_date_picker").value = localStorage.getItem("my_date_picker");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("my_date_picker",document.getElementById("my_date_picker").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("my_date_picker1").value = localStorage.getItem("my_date_picker1");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("my_date_picker1",document.getElementById("my_date_picker1").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("route").value = localStorage.getItem("route");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("route",document.getElementById("route").value);
+  });
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("center").value = localStorage.getItem("center");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("center",document.getElementById("center").value);
+  });
+</script>
+<script type="text/javascript">
+/*$("#displaytable").hide();
+*/
+/*$(document).ready(function(){
+	$("#centerhide").hide()
+		$('#getdata').click(function() {
+			$("#centerhide").show()
+	});
+});*/
+
+$(document).ready(function(){
+	$('.scroll').click(function() {
+		var element = document.getElementById("scroll");
+		element.classList.add("scrollable");
+	});
+    $('[name="start_date"]').val( '{{start_of_yr | date:"m/d/yy"}}' );
+    $('[name="end_date"]').val( '{{end_of_yr | date:"m/d/yy"}}' );
+});
+</script>
+
+
+{% endblock %}

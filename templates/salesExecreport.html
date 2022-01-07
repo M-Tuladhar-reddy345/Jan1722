@@ -1,0 +1,207 @@
+{% extends "header.html" %}
+{% block title %}Ls Milks{% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% block content %}
+<link href='https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css' rel='stylesheet'> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"> </script> 
+<script src= "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"> </script>
+<script> 
+    $(document).ready(function() { 
+        $(function() { 
+            $( "#my_date_picker" ).datepicker(); 
+        }); 
+
+    }) 
+	$( ".start_date" ).datepicker({
+	  defaultDate: +7
+	});
+
+</script> 
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker').val(today);
+});</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("my_date_picker").value = localStorage.getItem("my_date_picker");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("my_date_picker",document.getElementById("my_date_picker").value);
+  });
+
+	</script>
+	<script>
+
+    $(document).ready(function(){
+    document.getElementById("my_date_picker1").value = localStorage.getItem("my_date_picker1");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("my_date_picker1",document.getElementById("my_date_picker1").value);
+  });
+
+	</script>
+	<script>
+
+    $(document).ready(function(){
+    document.getElementById("active").value = localStorage.getItem("active");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("active",document.getElementById("active").value);
+  });
+
+	</script>
+
+<style>
+	th{
+	text-align: center !important;
+	padding: 7px !important;
+	border: 1px white;
+}
+
+</style>
+<style>
+    .css-serial {
+ counter-reset: serial-number; 
+}
+.css-serial td:first-child:before {
+ counter-increment: serial-number;
+ content: counter(serial-number); 
+}
+th{
+    text-align: center !important;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
+
+<div class="container">
+	<div class="row">
+		<div class="col-sm-12 col-md-12 col-xs-12">
+			<br><button type="button"><a href="/salesexecreport/pdf/{{SEcode}}/{{active}}/" target="_blank"> PDF Download</a></button>&emsp;
+			<button type="button"><a href="/excel-salesexec-report/{{SEcode}}/{{active}}/" target="_blank"> Excel Download</a></button><br>
+			<form method="POST" action="" enctype=""><br>
+				{% csrf_token %}
+				
+				<label for="fname"><b>Join Date </b> </label>
+				<input class="border_right " type="date" onfocus="(this.type='date')" onblur="(this.type='date')" id="my_date_picker" name="SEStJoinDate" placeholder="Enter MM/DD/YYYY" required="" value="{{start_of_m|date:'Y-m-d'}}">&emsp;&emsp;<label for="fname"><b> To </b> </label>&emsp;&emsp;
+				<input class="border_right" type="date" onfocus="(this.type='date')" onblur="(this.type='date')" id="my_date_picker1" name="SEEndJoinDate" placeholder="Enter MM/DD/YYYY" value="{{end_of_m|date:'Y-m-d'}}" required="">
+				<!--<input class="border_foot start_date" type="date" id="my_date_picker" name="date_from" placeholder="Enter MM/DD/YYYY" required="">-->
+				
+				
+				<!--<input class="border_foot" type="date" id="my_date_picker" name="date_to" placeholder="Enter MM/DD/YYYY" required="">-->
+				&emsp;&emsp;<label for="fname"><b>Code</b>  </label>&emsp;&emsp;
+				<select name="code">
+				    <option value="all">All</option>
+				    {% for salesExec in salesExec %}
+						    <option value="{{salesExec.SEcode}}">{{salesExec.SEcode}}</option>
+				  	{% endfor %}
+			  	</select>
+			  	<!--<label for="fname"><b>Center</b> </label>
+				<select name="centercode">
+				    <option value="all">All</option>
+				    {% for center in center %}
+						    <option value="{{center.centre_code}}">{{center.centre_code}}</option>
+				  	{% endfor %}
+                  </select>-->
+
+                   &emsp;&emsp;<label><b>Active</b></label>&emsp;&emsp;
+			  	<select name="active" value="{{al.active}}" id="active" required>
+			  	<option value="all">All</option>
+				<option value="yes">yes</option>
+				<option value="no">no</option>	
+				</select>
+				<br>
+				<label for="fname"> <b>Last Date</b></label>
+				<input class="border_right" type="date" onfocus="(this.type='date')" onblur="(this.type='date')" id="my_date_picker1" name="SEStLastDate" placeholder="Enter MM/DD/YYYY" value="{{end_of_m|date:'Y-m-d'}}" required="">&emsp;&emsp;<label for="fname"> <b>To</b></label>&emsp;&emsp;
+				<input class="border_right" type="date" onfocus="(this.type='date')" onblur="(this.type='date')" id="my_date_picker1" name="SEEndLastDate" placeholder="MM/DD/YYYY" value="{{end_of_m|date:'Y-m-d'}}" required="">
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+				  <button type="submit" class="btn btn-primary btn-lg" id="getdata" value=""> Get Data </button>
+				<br><br>
+			</form>
+			<table class="css-serial">
+				<thead>
+					<tr>
+   						 <th colspan="11" class="title_dash" style="text-transform: capitalize;background-color: #5d50c6 !important;">SalesExec Report</th>
+  					</tr>
+  				</thead>
+			
+				<thead style="background-color: #69bc5f !important;" id="centershow">
+					<tr>
+
+						
+					</tr>
+				</thead>
+			
+				<thead style="background-color: #69bc5f !important;">
+					<tr>
+						<th width="5%" class="school_activity">S.NO</th>
+						<th width="10%" class="school_activity"> Code</th>
+                        <th width="10%" class="school_activity"> Name</th>
+                        <th width="10%" class="school_activity">Join Date</th>
+						<th width="10%" class="school_activity">Last Date</th>
+						<th width="10%" class="school_activity">Zone_attached </th>
+						<th width="10%" class="school_activity">Zone_attached 1</th>
+						<th width="10%" class="school_activity">Zone_attached 2</th>
+						<th width="10%" class="school_activity">Active</th>
+						
+						<!--<th width="10%" class="school_activity">Receviable</th>
+						<th width="10%" class="school_activity">Payment</th>-->
+					</tr>
+				</thead>
+				<tbody>
+					{% for al in al %}
+					<tr>
+						<td style="text-align:center !important"></td>
+						<td style="text-align:center !important">{{al.SEcode}}</td>
+						<td style="text-align:center !important">{{al.SEname}}</td>
+						<td style="text-align:center !important">{{al.SEJoinDate |date:'d-m-Y'}}</td>
+						<td style="text-align:center !important">{{al.SELastDate |date:'d-m-Y'}}</td>
+						<td style="text-align:center !important">{{al.Zone_attached }}</td>
+						<td style="text-align:center !important">{{al.Zone_attached1}}</td>
+						<td style="text-align:center !important">{{al.Zone_attached2}}</td>
+						<td style="text-align:center !important">{{al.active}}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<script src="{% static 'js/ajax-jquery.min.js' %}"></script>
+<script type="text/javascript">
+/*$("#displaytable").hide();
+*/
+$(document).ready(function(){
+	/*$("#centerhide").hide()
+		$('#centershow').click(function() {
+		
+			
+
+			$("#centerhide").show()
+			
+		
+	});*/
+});
+
+$(document).ready(function(){
+
+    $('[name="start_date"]').val( '{{start_of_yr | date:"m/d/yy"}}' );
+    $('[name="end_date"]').val( '{{end_of_yr | date:"m/d/yy"}}' );
+});
+</script><br><br><br><br><br>
+{% endblock %}

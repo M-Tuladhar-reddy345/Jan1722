@@ -1,0 +1,186 @@
+{% extends "header.html" %}
+{% block title %}JacknJill{% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+
+<script> 
+    $(document).ready(function() { 
+        $(function() { 
+            $( "#my_date_picker" ).datepicker().datepicker("setDate", new Date()); 
+        }); 
+    }) 
+</script> 
+<?php
+    // Fetch the year, month and day
+    $year = date(Y);
+    $month = date(m);
+    $day = date(d);
+
+    // Merge them into a string accepted by the input field
+    $date_string1= "$year-$month-$day";
+?>
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker').val(today);
+});</script>
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = (now.getFullYear()+2)+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker1').val(today);
+});</script>
+<style type="text/css">
+   inpu7t[type=text],input[type=email],input[type=password],input[type=Number],input[type=date],select {
+  width: 17%;
+  padding: 8px;
+  border:  1px solid #D3D3D3;
+  border-radius: 4px;
+  resize: vertical;
+}
+#submit
+{
+margin: 1em 0 0.5em 0;
+font-weight: normal;
+position: relative;
+text-shadow: 0 -1px rgba(0,0,0,0.6);
+font-size: 18px;
+line-height: 40px;
+background:#66CCFF;
+
+border: 1px solid #fff;
+padding: 5px 15px;
+color: white;
+border-radius: 0 10px 0 10px;
+box-shadow: inset 0 0 5px rgba(53,86,129, 0.5);
+font-family: 'Arial', sans-serif;
+}
+#reset {
+margin: 1em 0 0.5em 0;
+font-weight: normal;
+position: relative;
+text-shadow: 0 -1px rgba(0,0,0,0.6);
+font-size: 18px;
+line-height: 40px;
+background:#66CCFF;
+
+border: 1px solid #fff;
+transition: 0.5s;
+padding: 5px 15px;
+color: white;
+border-radius: 0 10px 0 10px;
+font-family: 'Arial', sans-serif;
+}
+
+
+
+ 
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("prodmaster").value = localStorage.getItem("prodmaster");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("prodmaster",document.getElementById("prodmaster").value);
+  });
+
+  </script>
+
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("lname").value = localStorage.getItem("lname");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("lname",document.getElementById("lname").value);
+  });
+
+  </script>
+<script>
+    function myFunction() {
+        var bank=document.getElementById("prodmaster").value; 
+        {
+            document.getElementById("prodmaster").value = "P";
+        }
+        }
+    </script>
+
+<div class="container">
+
+    <div class="col-md col-sm"><br>
+      
+  <h2><center><b>PRODUCTS</b></center></h2><br>
+  <div class="row">
+    <form  method="POST" action="/prodmaster/" enctype="">
+      {% csrf_token %}
+       
+        &emsp;&emsp;&emsp;<label for="fname"><b><font size="5"> Product Code</font></b> &nbsp;</label>&emsp;&emsp;
+        <input type="text"  name="PCodeE" placeholder="Enter Product Code" id="PCodeE" onclick="myFunction()" required="">
+
+         &emsp;&emsp;&emsp;&emsp; &emsp;&emsp;&emsp;<label for="lname"><b><font size="5">Product Type</font></b></label>&emsp;&emsp;<input type="text" id="prod_type" name="prod_type" required="">
+             
+       &emsp;&emsp; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; &emsp;&emsp;&emsp;<label for="lname"><b><font size="5">Product Name</font></b></label>&emsp;&emsp;
+        <input type="text" id="Name" name="PName" placeholder="Enter Product Name" required="">
+      
+      
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp; &emsp;&emsp;&emsp;<label for="lname"><b><font size="5">Unit Rate</font></b></label>&emsp;&emsp;&emsp;
+        <input type="number" id="unitRate" name="unitRate" required=""><br>
+
+       
+
+        &emsp;&emsp;&emsp;<label for="fname"><b><font size="5">Quantity_From</font></b></label>&emsp;&emsp;
+        <input type="number" id="Name" name="qty_from" required="">
+
+         &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;<label for="fname"><b><font size="5">Quantity_To</font></b></label>&emsp;&emsp;
+        <input type="number" id="Name" name="qty_to"  required=""><br>
+
+        &emsp;&emsp;&emsp;&emsp;<label for="lname"><b><font size="5">Document</font></b></label>&emsp;&emsp;&emsp;&emsp;
+        <input type="file" id="document" name="document" ><br>
+      
+      &emsp;&emsp;&emsp;&emsp;<label for="fname"><b><font size="5">Start date</font></b></label>&emsp;&emsp;&emsp;&emsp;
+      <input type="date"  id="datePicker" name="PStDate" placeholder="Enter DD/MM/YYYY"  value="{{curdate}}">
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;&ensp;&emsp;<label for="fname"><b><font size="5">End date</font></b></label>
+            &emsp;&emsp;&emsp;
+            <input type="date" id="datePicker1" name="PEndDate" placeholder="Enter DD/MM/YYYY" required="">
+            <br><br>
+
+      
+      
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;
+            <!-- <label for="active"><b><font size="5">Active</font></b></label>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            <input type="checkbox" name="active" checked><br>&emsp;&emsp; -->
+            
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+      <a type="edit" class="btn btn-primary btn-lg" value="edit"  href="/emsarea/" >New </a>
+    <button type="reset" class="btn btn-primary btn-lg" value="Reset"> Reset </button>
+    <button type="submit" class="btn btn-primary btn-lg"> Submit </button>
+    <a type="edit" class="btn btn-primary btn-lg" value="edit"  href="/manage_prodmaster/" >Edit </a>
+        </form>    
+  </div>
+    </div>
+</div><br>
+
+
+
+{% endblock %} 

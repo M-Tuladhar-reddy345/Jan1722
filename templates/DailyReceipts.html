@@ -1,0 +1,479 @@
+{% extends "header.html" %}
+{% block title %}JacknJill{% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+<script> 
+    $(document).ready(function() { 
+        $(function() { 
+            $( "#my_date_picker" ).datepicker().datepicker("setDate", new Date()); 
+        }); 
+    }) 
+</script> 
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+$(document).ready( function() {
+var time = new Date();
+
+  var shift = time.toLocaleString('en-US', { hour: 'numeric', hour12: true });
+  
+  $('#shift').val(shift);
+});</script>
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker').val(today);
+});</script>
+<script>
+$(document).ready( function() {
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+
+   $('#datePicker1').val(today);
+});</script>
+<style type="text/css">
+
+	
+	table 
+	{
+	  border-collapse: collapse !important;
+	  width: 100%;
+	}
+td 
+	{
+  		border: 1px solid #000000 !important;
+  		text-align: left; !important;
+  		padding: 6px !important;
+	}
+th{
+	text-align: center !important;
+	padding: 6px !important;
+	border: 1px solid #000000 !important;
+}
+.no_pad{
+	padding-left:0px !important;
+	padding-right: 0px !important;
+}
+.td_border{
+	border:none !important;
+}
+.td_border input{
+	width:55% !important;
+}
+th{
+	
+	color:#000 !important;
+}
+input[type=shift]{
+	width:50px !important;
+}  
+input[type=date]{
+	width:150px !important;
+} 
+/*input[type=text] {
+	width:100px !important;
+}*/
+ input{
+	width:70px !important;
+
+}
+.scroll{
+	overflow-y: auto;
+	overflow-x: auto;
+	height: 200px;
+	margin-top: 0px;
+	width: 100%;
+	white-space: nowrap;
+}
+	
+.scroll thead th {
+	position: sticky;
+    top: 0;
+        
+	}
+</style>
+
+<div class="container">
+	<h2><b><center> Daily Receipts</center></b></h2>
+	<!--<div style="border:1px solid #dddddd;padding:10px;margin:10px;">-->
+			
+			<div class="col-md-85 col-sm-85 col-xs-85">
+				
+					<form  method="POST"  action="/dailyreceipts/" enctype="">
+						{% csrf_token %}
+						<div class="col-md-05 col-sm-07 col-xs-09">
+							<!--<h6><b>Daily Sale Entries</b></h6>-->
+							<label><b>Branch</b></label>&ensp;
+							<input type="text" name="branch11" value="{% if user.is_authenticated %}{{user.extendeduser.branch}}{%endif%}" disabled>
+							&emsp;<label for="fname"><b>Date</b></label>&ensp;
+							<input type="date"  id="datePicker1" name="date" placeholder="Enter YYYY/MM/DD" required="" value={{curdate}}>&emsp;&emsp;
+				
+						  	<!--<label><b>Date</b></label>&ensp;
+							<input type="date" id="datePicker" name="dateform" placeholder="Enter YYYY-MM-DD" required="" value="{{curdate}}">&emsp;&emsp;
+							<label for="fshift"><b>Shift</b></label>&ensp;
+							<select name="time" id="time">
+							    <option value="AM">AM</option>
+							    <option value="PM">PM</option>
+						  	</select> &emsp;&emsp;
+						  	<label> <b>Bulk / Retail </b></label>&ensp;
+							<select name="goodsour" id="goodsour">&emsp;&emsp;
+							    <option value="good">Bulk</option>
+							    <option value="sour">Retail</option>
+						  	</select>&emsp;&emsp;-->
+						</div>
+							<br>
+						<!--<div class="col-md-22 col-sm-22 col-xs-22" style="border: 1px solid #dddddd;">
+						<h6>Cow Milk</h6> -->
+			  	    		<div class="col-md-15 col-sm-12 col-xs-12  no_pad">		<!--<table>
+			  	    				<tr>						            	
+						                 <th>Order No </th>
+						                <th>RecDate</th> 
+						                <th>RecType</th>
+						                <th>PayRefNo</th>
+						                <th>Amount</th>
+						                <th>Remarks</th>  
+						            </tr>
+						        </thead>
+						        <tbody id='form' class="form-block_1">
+						            <tr class="odd"  role="row">
+						            	
+										<select name="OrderNo[]" id="order"  style="width:150px">
+												{% for Dailysales in Dailysales %}
+											    <option value="{{Dailysales.orderNo}}" >{{Dailysales.orderNo}}-{{Dailysales.custcode}}</option>
+											    {% endfor %}
+										  	</select>
+										</td>  
+						              <td>
+						              	<input type="date" id="datePicker" name="recdate[]"  style="width:35px" value="{{curdate}}" required="" id="redate">
+										</td>
+										<td>
+										
+										<select name="recType[]" id="Type" style="width:100px">
+											
+												<option value="CASH">CASH</option>
+												<option value="CHEQUE">CHEQUE</option>
+												<option value="I-BANK">I-BANK</option>
+									
+												</select>
+										</td>
+										<td>
+										<input type="text"  name="payRefNo[]" step="any" style="width:100px" id="refno"></td>
+										<td>&emsp;<input type="number" name="amount[]" checked step="any" id="amount">
+										</td>
+						                <td class = "remarks" >
+           								
+     									 <input type="text" name="remarks[]"  id="remarks" style="width:200px" > 
+     									</td>
+
+						            </tr> 
+						        </table>-->      
+						  	<table class="table display data-table text-nowrap" id ="doctable"  style="width:100%; border-color:black !important;">
+								    
+			    
+								<thead class="tableHeadcolor">
+						            
+						                <th style="background-color: #69bc5f !important;">Order No </th>
+						                <th style="background-color: #69bc5f !important;">Rec No </th>
+						                <th style="background-color: #69bc5f !important;">Record Date</th> 
+						                <th style="background-color: #69bc5f !important;">Record Type</th>
+						                <th style="background-color: #69bc5f !important;">Payment Reference No</th>
+						                <th style="background-color: #69bc5f !important;">Amount</th>
+						                <th style="background-color: #69bc5f !important;">Remarks</th> 
+						          
+						        </thead>
+						        <tbody id='form' class="form-block_1">
+						            <tr class="odd"  role="row">
+						            	
+										
+										<!--<input type="hidden" value="{{curdate}}" name="dateform" style="text-align:right">
+						            	<input type="hidden"  name="OrderNo[]" style="text-align:right">-->
+						            	<td>	
+											<select name="OrderNo[]" id="order"  style="width:150px">
+												{% for Dailysales in Dailysales %}
+											    <option value="{{Dailysales.orderNo}}" >{{Dailysales.orderNo}}-{{Dailysales.custcode}}</option>
+											    {% endfor %}
+										  	</select>
+										</td> 
+										<td>&emsp;<input type="number" name="recNo[]" step="any" id="recNo" style="width:200px">
+										</td> 
+						              <td>
+						              	<input type="date" id="datePicker" name="Recdate[]"  style="width:35px" value="{{curdate}}" required="" id="redate">
+										</td>
+										<td>
+										
+										<select name="RecType[]" id="Type" style="width:100px">
+											
+												<option value="CASH">CASH</option>
+												<option value="CHEQUE">CHEQUE</option>
+												<option value="I-BANK">I-BANK</option>
+									
+												</select>
+										</td>
+										<td>
+										<input type="text"  name="PayRefNo[]" id="refno" style="width:300px !important;"></td>
+
+										<td>&emsp;<input type="number" name="Amount[]" step="any" id="amount" style="width:200px">
+										</td>
+						                <td class = "remarks">
+     									 <input type="text" name="remarks[]"  id="remarks" style="width:300px !important;" > 
+     									</td>
+
+						            </tr> 
+						           
+						       </tbody>
+						    </table>
+			    		<button type="button" class="btn btn-primary btn-lg"><a class="btn backgroundBlue add-more-btn addDeleteButton">Add</a></button>&emsp;&emsp;
+									<button type="submit" class="btn btn-primary btn-lg"  id="submitData" value="" disabled>Submit </button>
+									<br></br>
+			    				
+			 			<div class ="scroll">
+			 				<table class="table display data-table1 text-nowrap" style="width:100%;">
+							        <tbody id='form' class="form-block_1">   
+							       </tbody>
+							 	</table>
+						</div>
+					</body>
+				</div>
+			</div>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+			
+		
+		<br>
+		<br>
+		<br>
+		</form>
+	</div>
+</div>
+</div>
+<script type="text/javascript">
+	document.getElementById('centercode').onchange = function() {
+    alert(this.value);
+	}
+	// $(document).on("change", "#centercode", function(){
+ //        var a =  $(this).find(':selected').data('name');
+ //        $("#center_name").val(a);
+ //    });
+    $(document).on("change", "#code_center", function(){
+        var b =  $(this).find(':selected').data('name');
+       	
+        $("#route").val(b);
+        
+    });
+    // $(document).on("change", "#code_center", function(){
+    //     var c =  $(this).find(':selected').data('bankname');
+    //     alert(c);
+    //     $("#bankname").val(c);
+    // });
+    // function Amount(val) {
+    //     var fat = document.getElementById('fat').value;
+    //     var qty = document.getElementById('qty').value;
+    //     var snf = document.getElementById('snf').value;
+    //     var rate_min = '{{rate.rate}}';
+    //    	var quantity = parseFloat(qty)/parseFloat(1.03);
+    //    	var a1 = parseFloat(snf) + parseFloat(fat)
+    //     var rate = ( a1* parseFloat(rate_min))/100;
+    //     var total_amount = parseFloat(rate) * parseFloat(quantity);        
+    //     var amount = document.getElementById('rate');
+    //     var total = document.getElementById('amount');
+    //     total.value = total_amount;
+    //     amount.value = rate;
+    // }
+</script>
+<script>
+	function deleteRow() {
+  document.querySelectorAll('#doctable .select:checked').forEach(e => {
+    e.parentNode.parentNode.remove()
+  });
+}
+//$(document).ready(function(){
+  //  $('#delrow').click(function(){
+    //        $("#doctable input:checkbox").each(function(){
+      //          if (this.checked) {
+        //             $(this).parent().parent().remove();
+          //      }
+            //    return false;  
+
+           // })
+    //});
+    //});
+
+//	$(function(){
+//		$(document).on("click",".deleterows",function(){
+//			var deleterowsfromtable=$(".form-block_1 input:checked").parents("tr").remove();
+//		});
+//	});
+</script>
+
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.add-more-btn').click(function() {
+        	/*var clone = $('.form-block_1:first').clone();
+            $('#form-new').append(clone);*/
+            var datePicker = document.getElementById("datePicker").value;
+			var refno = document.getElementById("refno").value;
+			var amount = document.getElementById("amount").value;
+			var remarks = document.getElementById("remarks").value;
+			  	if(datePicker == "" || refno =="" || amount=="" || remarks =="") {
+			    	alert("Please fill all columns");
+
+			    	return false;
+			  	}
+			  	else {
+			
+		            var $tableBody = $('.data-table ').find("tbody"),
+		            $trFirst = $tableBody.find("tr:first");
+				    $trNew = $trFirst.clone();
+				    $trFirst.after($trNew);
+				   
+				   	
+		        
+		    		var $tableBody1 = $('.data-table1 ').find("tbody");
+					($trNew).attr("readonly", true);
+					($trNew).each(function () {
+		                   $(this).children("td").each(function () {
+		                   		$(this).find("input").prop("readonly", true);
+		                   	
+		                   		//$(this).find("input");
+		                   });
+
+		               });
+					var rowCount = $('.data-table1 tr').length+1;
+					($trNew).prepend($('<td>').append(rowCount));
+					$tableBody1.prepend($trNew);
+				}
+					$("#submitData").prop('disabled', false); //enable
+					
+					
+					
+					$trNew.find("#order").val( $trFirst.find("#order").val());
+					$trNew.find("#Type").val( $trFirst.find("#Type").val());
+				   	
+
+
+					
+		        });
+		    });
+		   
+
+</script>
+
+</script>
+									
+						               
+
+
+						            </tr>        
+						       </tbody>
+						    </table>
+			    
+						</div>
+			
+			</div>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+	
+			
+
+			
+		</form>	
+		<br>
+		<br>
+		<br>
+		<br>
+		
+	</div>
+</div>
+
+
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("order").value = localStorage.getItem("order");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("order",document.getElementById("order").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("redate").value = localStorage.getItem("redate");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("redate",document.getElementById("redate").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("Type").value = localStorage.getItem("Type");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("Type",document.getElementById("Type").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("amount").value = localStorage.getItem("amount");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("amount",document.getElementById("amount").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("refno").value = localStorage.getItem("refno");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("refno",document.getElementById("refno").value);
+  });
+
+</script>
+
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("datePicker").value = localStorage.getItem("datePicker");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("datePicker",document.getElementById("datePicker").value);
+  });
+
+</script>
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("datePicker1").value = localStorage.getItem("datePicker1");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("datePicker1",document.getElementById("datePicker1").value);
+  });
+
+</script>
+{% endblock %}

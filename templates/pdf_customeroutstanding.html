@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<head>
+        <style>
+            table {
+              font-family: arial, sans-serif;
+              border-collapse: collapse;
+              width: 100%;
+            }
+
+            td, th {
+              border: 0px solid #dddddd;
+              text-align: center;
+              /*padding: 8px;*/
+              padding-top: 7px;
+              padding-bottom: 8px;
+            }
+            .title_middle{text-align: center;
+            }
+            .title_middle1{
+            font-family: arial, sans-serif;
+            font-size: 15px;}
+            .title_middle2{text-align: right;
+            font-family: arial, sans-serif;
+            }
+            h1.uppercase {
+  text-transform: uppercase;
+  text-align: center;
+}
+            
+
+        </style>
+
+            <h2 style="text-align:center;"> Customer Wise Outstanding report   {{datefrom1}} {{aa}} {{dateto1}} <br>
+                Order No : {{orderNo}} <br>  Customer : {{custcode}}
+            
+          
+            </h2>
+        <br>
+        
+  <body>
+        
+         <table>
+           
+                <hr>
+                    <tr>
+                        <tr>
+                        
+                        <th width="10%" style="text-align: center;">S.NO</th>
+                        <th width="20%"class="school_activity">Customer</th>
+                        <th width="20%"class="school_activity">Amount</th>
+                        <th width="20%"class="school_activity">Discount</th>
+                        <th width="20%"class="school_activity">Net Amount</th>
+                        <th width="20%"class="school_activity">Rec Amount</th>
+                        <th width="20%"class="school_activity">O/s Amount</th>
+                        <!--<th width="7%"class="school_activity">Coupon / Disc </th>-->
+                        <!--<th width="13%" style="background-color: #69bc5f !important;">OrderNo - Date</th>
+                        
+                        
+                        <th width="10%" style="background-color: #69bc5f !important;">Remarks</th>-->
+                    </tr>
+                          
+                    </tr>
+                </hr>
+            </thead>
+            </table>
+
+        </div>        
+<hr>
+       <table>
+            <tbody>
+                {% for data in data1 %}
+                <tr>    
+
+                   
+                    <tr ><!-- class= "{{custcode}}" style="display: none;">-->
+
+                        <td style="text-align:center !important" width="10%">{{forloop.counter }}</td>
+
+                        <td width="20%" style="text-align:center !important">{{data.custName}}</td>
+                        
+                        
+                        <td width="20%" style="text-align:right !important">{{data.amount|floatformat:2}}&ensp;</td>                       
+                        
+                        <td width="20%" style="text-align:right !important">{{data.comm|floatformat:2}}&ensp;</td>
+                        <td width="20%" style="text-align:right !important">{{data.netAmount|floatformat:2}}&ensp;</td>
+                        <td width="20%" style="text-align:right !important">{{data.RecAmount|floatformat:2}}&ensp;</td>
+                        <td width="20%" style="text-align:right !important">{{data.osAmount|floatformat:2}}&ensp;</td>
+                        <!--<td width="5%"style="text-align:right !important">{{dc.couponCode}} &ensp;- [{{dc.disc|floatformat:1}}&ensp;%]</td>-->
+                        <!--<td width="13%">{{dc.orderNo}}-{{dc.date|date:'d/m/y'}}</td>
+                        
+                        <td width="10%" style="text-align:right !important">{{dc.remarks}}&ensp;</td>   -->                 
+                        
+                    </tr>
+
+                
+
+                    
+                    {% endfor %}
+
+                    
+                </tbody>
+                <div class="footer">
+                <tfoot class="footer">
+                <tr>
+                <td style="text-align:left !important"><b>Total</b></td>
+                
+               <td></td>
+                <td style="text-align:right !important"><b>{{total_Amountsum_detail|floatformat:2}}</b>&ensp;</td>                              
+                
+                
+                
+                <td style="text-align:right !important"><b>{{total_CommAmtsum_detail|floatformat:2}}</b>&ensp;</td>
+                
+                <td style="text-align:right !important"><b>{{total_NetAmtsum_detail|floatformat:2}}</b>&ensp;</td>
+                
+
+                <td style="text-align:right !important"><b>{{total_CommRecSum_detail|floatformat:2}}</b>&ensp;</td>
+                 <td style="text-align:right !important"><b>{{total_CommOsSum_detail|floatformat:2}}</b>&ensp;</td>
+                
+                
+
+                
+              </tr>
+
+
+                
+
+                    
+                    
+
+                    
+                </tbody>
+                
+         
+            </table>
+             
+   <!-- <table id="header-fixed"></table>-->
+    </body>
+
+</html>

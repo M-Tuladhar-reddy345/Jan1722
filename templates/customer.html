@@ -1,0 +1,242 @@
+{% extends "header.html" %}
+{% block title %}Ls Milks {% endblock %}
+{% block description %}{% endblock %}
+{% block keyword %}{% endblock %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+<style>
+select {
+     width: 100px;
+     margin: 10px;
+}
+input[type=text],input[type=email],input[type=password],input[type=number],input[type=tel],select {
+  width: 17%;
+  padding: 6px;
+  border:  1px solid #D3D3D3;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+#select:focus {
+    min-width: 150px;
+    width: auto;
+}
+h2{margin: 1em 0 0.5em 0;
+font-weight: normal;
+position: relative;
+text-shadow: 0 -1px rgba(0,0,0,0.6);
+font-size: 28px;
+line-height: 40px;
+background: #355681;
+background: rgba(53,86,129, 0.8);
+border: 1px solid #fff;
+padding: 5px 15px;
+color: white;
+border-radius: 0 10px 0 10px;
+box-shadow: inset 0 0 5px rgba(53,86,129, 0.5);
+font-family: 'Muli', sans-serif;
+
+}
+#submit
+{
+margin: 1em 0 0.5em 0;
+font-weight: normal;
+position: relative;
+text-shadow: 0 -1px rgba(0,0,0,0.6);
+font-size: 18px;
+line-height: 40px;
+background:#66CCFF;
+border: 1px solid #fff;
+padding: 5px 15px;
+color: white;
+border-radius: 0 10px 0 10px;
+box-shadow: inset 0 0 5px rgba(53,86,129, 0.5);
+font-family: 'Arial', sans-serif;
+}
+#reset{
+margin: 1em 0 0.5em 0;
+font-weight: normal;
+position: relative;
+text-shadow: 0 -1px rgba(0,0,0,0.6);
+font-size: 18px;
+line-height: 40px;
+background: #66CCFF;
+
+border: 1px solid #fff;
+padding: 5px 15px;
+color: white;
+border-radius: 0 10px 0 10px;
+box-shadow: inset 0 0 5px rgba(53,86,129, 0.5);
+font-family: 'Arial', sans-serif;
+}
+
+
+</style>
+
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("customer").value = localStorage.getItem("customer");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("customer",document.getElementById("customer").value);
+  });
+
+	</script>
+
+<!-- <script>
+
+    $(document).ready(function(){
+    document.getElementById("customer").value = localStorage.getItem("customer");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("customer",document.getElementById("customer").value);
+  });
+
+	</script> -->
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("address").value = localStorage.getItem("address");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("address",document.getElementById("address").value);
+  });
+
+	</script>
+	<!-- <script>
+
+    $(document).ready(function(){
+    document.getElementById("mobile").value = localStorage.getItem("mobile");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("mobile",document.getElementById("mobile").value);
+  });
+
+	</script> -->
+	<script>
+
+    $(document).ready(function(){
+    document.getElementById("document").value = localStorage.getItem("document");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("document",document.getElementById("document").value);
+  });
+
+	</script>
+<!-- 	<script>
+
+    $(document).ready(function(){
+    document.getElementById("email").value = localStorage.getItem("email");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("email",document.getElementById("email").value);
+  });
+
+	</script> -->
+	<script>
+
+    $(document).ready(function(){
+    document.getElementById("active").value = localStorage.getItem("active");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("active",document.getElementById("active").value);
+  });
+
+	</script>	
+
+<script>
+
+    $(document).ready(function(){
+    document.getElementById("customer").value = localStorage.getItem("customer");
+        });
+
+   $(window).on('beforeunload', function() {
+    localStorage.setItem("customer",document.getElementById("customer").value);
+  });
+
+	</script>
+
+<div class="container">
+	<h2><center><b>Customer</b></center></h2>
+	<form  method="POST" action="" enctype="multipart/form-data">
+		{% csrf_token %}
+		<!--&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label><b> Branch</b></label>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+		<input class="border-right" type="text" name="branch" placeholder=" " id="branch" onclick="myFunction()" required="">-->
+		<input type="text" name="branch11" value="{% if user.is_authenticated %}{{user.extendeduser.branch}}{%endif%}" hidden="">
+		
+		
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label><b>Code</b> &nbsp;&nbsp; </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+		
+		{% for getMaxCustID in getMaxCustID %}	
+										<input type="button" name="custCodeB" value = "RMDL0{{getMaxCustID.newCustSer}}" step="any" id="custCode" style="width:250px" readonly>
+										<input type="hidden" id="custCode" name="custCode"  style="width:35px" value="RMDL0{{getMaxCustID.newCustSer}}" >
+										<input type="hidden" id="custSer" name="custSer"  style="width:35px" value="{{getMaxCustID.newCustSer}}" >
+										{% endfor %}
+
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label><b>Name</b> </label>&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+		<input class="border-right" type="text" name="custName" id="custName"placeholder=" " required=""><br><br>
+
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label ><b>Zone Code</b></label>&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;
+		<select name="zoneCode" id="zoneCode" required>
+			<option></option>
+				{% for zone in zone %}
+					<option value="{{zone.zCode}}">{{zone.zCode}}-{{zone.zName}}</option>
+				{% endfor %}
+		</select>&emsp;&emsp;&emsp;
+
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label ><b>Sales Exec</b></label>&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;
+		<select name="saleExecCode" id="saleExecCode" required>
+			<option></option>
+				{% for salesexec in salesexec %}
+					<option value="{{salesexec.SEcode}}">{{salesexec.SEcode}}-{{salesexec.SEname}}</option>
+				{% endfor %}
+		</select>&emsp;&emsp;&emsp;<br><br>
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label ><b>Customer Type</b></label>&nbsp;&emsp;&emsp;&emsp;&nbsp;
+		<select name="cust_type" id="cust_type" required>
+			<option></option>
+				{% for Custtype in Custtype %}
+					<option value="{{Custtype.cTypeCode}}">{{Custtype.cTypeCode}}-{{Custtype.cTypeName}}</option>
+				{% endfor %}
+		</select>&emsp;&emsp;&emsp;
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label><b> Distance</b> &nbsp;&nbsp; </label>&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;
+		<input type="number" name="distance" id="distance" required=""><b>(In KM.)</b><br><br>
+            
+		
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label><b> Mobile</b> &nbsp;&nbsp; </label>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+		<input class="border-right" type="text" name="mobile" id="mobile"placeholder=" " required=""  maxlength="10" pattern="[0-9]{10}">
+
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label><b> Email</b>&nbsp; </label>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+		<input class="border-right" type="text" name="email" id="email"placeholder=" " required=""><br><br>
+
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label><b> Address</b> &nbsp;&nbsp; </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;
+		<input class="border-right" type="text" name="address" id="address"placeholder=" " required="">
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+        		<b>Active</b>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+				<select name="active" id='active'>
+					<option value="1">Yes</option>
+					<option value="0">NO</option>
+				</select><br></br>	
+		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label for="lname"><b>Document</font></b></label>&emsp;&emsp;&emsp;&emsp;&emsp;
+		<input type="checkbox" name="HvPhoto" checked>
+		<input type="file" name="HvPhoto" accept="image/gif, image/jpeg, image/jpg , image/png">&emsp;&emsp;&emsp;&emsp;
+							
+       
+		<center><a type="new" class="btn btn-primary btn-lg" value="new"  href="/customer/" >New </a>&emsp;&emsp;
+		<button type="reset" class="btn btn-primary btn-lg" value="Reset"> Reset </button>&emsp;&emsp;
+		<button type="submit" class="btn btn-primary btn-lg"onclick="compare()"> Submit </button>&emsp;&emsp;
+		<a type="edit" class="btn btn-primary btn-lg" value="edit"  href="/managecustomer1/" >Edit </a></center>
+
+	</form>
+</div><br><br><br><br><br><br><br>
+
+
+{% endblock %}
