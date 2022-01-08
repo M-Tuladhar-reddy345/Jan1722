@@ -382,15 +382,9 @@ $(document).ready(function(){
 			  url: "/modifyPayments/",
 			  success: document.body
 				}).done(function(data) {
-					console.log(data)
-					if (data[0] == 'CANNOT update Excess amount than Bill Amount OrderNo' ) {
-						alert(data[0]+' '+ data[1]);
-					}
-					else{
+					
 						alert('details saved')
 						location.reload();
-
-					}
 
 					
 					

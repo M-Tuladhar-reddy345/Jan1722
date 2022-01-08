@@ -16,7 +16,7 @@ from email.message import EmailMessage
 from school.models import EMSArea,PayDetailsExcelupload,EMSArea,Rpt_EMSRevSumO,rpt_emsSumbyAnBOnly,rpt_emsSumTHOnly,Harvesting,EMSFertiliser,EMSPND,Irrigation,Message,EMSPlantType,Notice,Centermasterdataexcelupload,tsratesexcelupload,Ifscexcelupload,ExtractEMSData,Proc_Data_EE,rpt_loan,daily_data_excel,DokQC_Create,DokQC_Entry,Version,sendanemail,Logdokqc,rpt_dailydata,milkdata,RPT_Routewisebillabstract,Dashboard_branch,RPT_Daywiseabstract,Sendsms,rpt_excel_bankwise,Category1,Logmatch,Matchlog,Daily_dataaa,Logfile,Logfilee,Loogfileee,Logfileee,Daily_dataa,Bank1,Formulae1,centerbank,RPT_Milkbillvoucher,Milktype1,Office1,Role1,Route1,Department1,Additions,Usersdata,Branch1,Agent1,Supervisor1,Groupsdata,Person,rpt_bufallomilk,Branchlog,rpt_cowmilk,Excelupload,dailydataExcelupload,ExtractPlantData,RPT_consolidatedreport,centerdata,Excelextraction,Loanbillsdata,RPT_Milkbillreport,Signup,Route,Rfr,Referral,Role,Office,Department,QC_Create,DoK_Create,Deposit,RPT_Daywisesreport,BufalloMilkCategory,BufalloMilkCenter,BufalloMilkRoute,Refund,Cloan,Supervisor,Category,QC_Bank,Daily_data,DoK_Entry,QC_Entry,Daily_trans,Milktype,Branch,Formulae,Village,Bank,Agent,Center,CowMilkCategory,CowMilkRoute,CowMilkCenter,Transcation,MinMaxFat,MinMaxBuff,rpt_bankwise,rpt_emsSumbyAnB,rpt_emsDeDSumbyAnB,rpt_emsSumTH,Rpt_EMSRevSum
 # Sales Module
 from school.models import rpt_daily_sales,rpt_daily_sales_subTot
-from school.models import saleorder, daily_sales ,daily_receipts,equip_receipts ,prodMaster,prodType,Customer,custType,SalesExec,Zone,Coupon,indentdataexcelextract
+from school.models import daily_pic_receipts,saleorder, daily_sales ,daily_receipts,equip_receipts ,prodMaster,prodType,Customer,custType,SalesExec,Zone,Coupon,indentdataexcelextract
 
 #
 # from school.forms import DocumentForm
@@ -17944,8 +17944,35 @@ def dailyIndentRep_1205(request):
 
 #END 16-11-21 .. dailyIndentReport
 ## 1..2..3..DailySales..manage_dailySales..csv_dailysales
+
 @csrf_exempt
 def prodUnitRate(request):
+    brch = request.user.extendeduser.branch
+    unitRate = 0
+    cursor = connection.cursor()
+    if request.method == 'POST':
+        custCode = request.POST['Ccode']
+        oDate = request.POST['dateform']
+        prodCode = request.POST.getlist('prodcode[]')[0]         
+        qty = request.POST.getlist('qty[]')[0]
+        disc = request.POST.getlist('disc[]')[0]
+        #print('@16060 OrderDate',oDate,'prodCode',prodCode)
+        product_query = f'select pd.unitrate from {brch}.school_prodmaster pd where pd.splcustcode = "{custCode}" and pd.pcode = "{prodCode}"  and "{oDate}" between PStDate and PEndDate limit  1;'
+        cursor.execute(product_query)
+        product = cursor.fetchone()
+        if product == None:
+            product_query = f'select pd.unitrate from {brch}.school_prodmaster pd where pd.pcode = "{prodCode}" and pd.pcode = "{prodCode}"  and "{oDate}" between PStDate and PEndDate limit  1;'
+            cursor.execute(product_query)
+            product = cursor.fetchone() 
+        #print(product)   
+        amt = (product[0]*int(qty))-int(disc)
+        print('@17969 disc',disc,'amt',amt)
+        return JsonResponse({'product':product[0],'amt':amt}, safe=False)
+
+    return HttpResponse(product)
+
+@csrf_exempt
+def prodUnitRate_822(request):
     brch = request.user.extendeduser.branch
     unitRate = 0
     cursor = connection.cursor()
@@ -18481,6 +18508,7 @@ def update_containers(request):
                     #getSaleOrderwiseData = " select distinct d.id ssid, d.id, d.orderNo,d.remarks, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,   ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt  from  %s.school_saleorder d  join  %s.school_customer c on c.custCode = d.custCode and (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount) and d.date >='2021-11-01' group by d.custcode,d.orderno order by d.date,d.custcode,d.orderno " %(str(brch),str(brch),str(customer1)) 
                     getSaleOrderwiseData = " select distinct d.id ssid, d.id, d.orderNo,d.remarks, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,   ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt  from  %s.school_saleorder d  join  %s.school_customer c on c.custCode = d.custCode and (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount) group by d.custcode,d.orderno order by d.date,d.custcode,d.orderno " %(str(brch),str(brch),str(customer1)) 
 
+
                     #print('@8779',getSaleOrderwiseData)
                     
                     dr2 = saleorder.objects.using(brch).raw(getSaleOrderwiseData) 
@@ -18501,7 +18529,243 @@ def update_containers(request):
        # messages.error(request,err)
         return render(request,'update_containers.html',locals())
 
+#Update_payments_by PIC
+## 08Jan22
 
+def manage_pic_payments(request):  
+    #try: 
+        if request.session.has_key('name'):
+            brch = request.user.extendeduser.branch             
+            if request.user.extendeduser.branch == brch :
+
+                #getSalesData = "select distinct d.id, d.custCode custcode, c.custName from  %s.school_saleorder d left join %s.school_daily_receipts R on R.orderno = d.orderno and netAmount > 0 and (RecAmount = 0 or RecAmount < netAmount  ) left join  %s.school_customer c on c.custCode = d.custCode group by c.custname,d.orderno order by c.custname,d.orderno "%(str(brch),str(brch),str(brch)) 
+                #getSalesData = "select distinct S.id, C.custCode custcode, C.custName, sum(OSAmount) osamt from  %s.school_saleorder S,  %s.school_customer C where C.custCode = S.custcode and date>= '2021-11-01' and netAmount > 0 and osAmount > 0 group by C.custCode order by C.custName "%(str(brch),str(brch)) 
+                getSalesData = "select distinct S.id, C.custCode custcode, C.custName, sum(OSAmount) osamt from  %s.school_saleorder S,  %s.school_customer C where C.custCode = S.custcode and netAmount > 0 and osAmount > 0 group by C.custCode order by C.custName "%(str(brch),str(brch)) 
+                #getSalesData = "select distinct d.id, d.custCode custcode, c.custName , sum(d.netAmount) nAmt,sum(d.netAmount)-sum(R.Amount) OsAmt, sum(R.Amount) recAmount from  %s.school_daily_sales d left join %s.school_daily_receipts R on R.orderno = d.orderno and netAmount > 0 and (RecAmount = 0 or RecAmount < netAmount  ) left join  %s.school_customer c on c.custCode = d.custCode group by c.custname,d.orderno order by c.custname,d.orderno "%(str(brch),str(brch),str(brch)) 
+                #getSalesDataNOK = "select distinct d.id, d.custCode custcode, c.custName custName, sum(d.netAmount-RecAmount) OsAmt from %s.school_daily_sales d , %s.school_customer c  where c.custcode = d.custCode and netAmount > 0 and (RecAmount = 0 or RecAmount < netAmount  ) group by custName order by custName"%(str(brch),str(brch))                
+                #print('@8821',getSalesData)
+                DailysalesC = saleorder.objects.using(brch).raw(getSalesData)
+
+                #Dailysales = daily_sales.objects.using(brch).filter(RecAmount = 0 and RecAmount < netAmount).distinct()
+                #Dailyreceipts = daily_receipts.objects.using(brch).filter().distinct()
+               
+
+                if request.method == "POST":
+                    #orderdateF = request.POST['orderDateF']
+                    
+                    #orderdateT = request.POST['orderDateT']  
+                    customer1 = request.POST['custCodeR']
+                    custCodeR =  customer1
+                    #orderno1 = request.POST['orderNoP'] 
+                    #print('@8777',orderno1)                    
+                    #print('#15923-orderdateF',orderdateF,'orderdateT',orderdateT,'custCodeR',custCodeR)
+                    #getSaleDataP = "select distinct  s.* from %s.school_daily_sales s Where (date = '%s' or custcode = '%s' or orderNo = '%s') and recamount < netAmount  "%(str(brch),str(orderdate1),str(customer1),str(orderno1))  
+                   # getSaleDataP = "select distinct s.* from %s.school_daily_sales s Where (date = '%s' and custcode = '%s' and orderNo = '%s') and (recamount = 0 and recamount < netAmount)  "%(str(brch),str(orderdate1),str(customer1),str(orderno1))  
+                    
+                    #getMaxAgentRecNoQry = "select id,COALESCE(max(recNo),1), COALESCE(max(recNo)+1,1) newRecNo from %s.school_daily_agent_receipts"%(str(brch))                
+                    #getMaxrecID =daily_agent_receipts.objects.using(brch).raw(getMaxAgentRecNoQry)
+
+                    getMaxAgentRecNoQry = "select id,COALESCE(max(recNo),1), COALESCE(max(recNo)+1,1) newRecNo from %s.school_daily_pic_receipts"%(str(brch))                
+                    getMaxrecID =daily_pic_receipts.objects.using(brch).raw(getMaxAgentRecNoQry)
+
+
+                    getSaleOrderwiseData = " select distinct d.id ssid, d.id, d.orderNo,d.remarks, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,   ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt  from  %s.school_saleorder d  join  %s.school_customer c on c.custCode = d.custCode and (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount) group by d.custcode order by d.custcode " %(str(brch),str(brch),str(customer1)) 
+
+                    print('@8779',getSaleOrderwiseData)
+                    
+                    dr2 = saleorder.objects.using(brch).raw(getSaleOrderwiseData) 
+                   
+                    #getOsAmt = " select distinct d.id ssid, d.id,  ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt , sum(OSAmount) sOSAmount from  %s.school_saleorder d where (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount) and d.date >='2021-11-01' group by d.custcode  " %(str(brch),str(customer1)) 
+                    getOsAmt = " select distinct d.id ssid, d.id,  ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt , sum(OSAmount) sOSAmount from  %s.school_saleorder d where (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount)  group by d.custcode  " %(str(brch),str(customer1)) 
+
+                    #print('@8779',getSaleOrderwiseData)
+                    
+                    os2 = saleorder.objects.using(brch).raw(getOsAmt) 
+                   
+
+            return render(request,'manage_pic_payments.html',locals())
+        else:
+            return render(request,'index.html',locals())
+    #except Exception as err:
+
+       # messages.error(request,err)
+        return render(request,'manage_pic_payments.html',locals())
+
+##08Jan22
+def updatePICPayments(request):
+   # try:
+        if request.session.has_key('name'):
+            brch = request.user.extendeduser.branch
+            if request.user.extendeduser.branch == brch:
+                #Dailyreceipts = daily_receipts.objects.using(brch).filter().distinct()
+                #Dailysales = daily_sales.objects.using(brch).filter().distinct()
+                
+                if request.method == "POST":
+                    #recdateH = request.POST["date_t2"]
+                    #recdateH ="2021-10-28"
+                    
+                    #print('@8803',request.POST['orderdateT']  )
+                    
+                    custCodeH = request.POST["custCodeR"] 
+
+                    #print('@8802',request.POST['custCodeR'],   )
+
+                    Dailysales4R = daily_sales.objects.using(brch).filter(custcode=request.POST["custCodeR"]).distinct()
+                    
+                    for index,j in enumerate(request.POST.getlist('OrderNo[]')):
+                        
+                        payRecValue = request.POST.getlist('remove[]')[index]
+                        payOrderID = request.POST.getlist('dsrid1[]')[index]
+                        #print("@8865-payRecValue",payRecValue,"orderID",payOrderID)
+                        if payRecValue == "P" :
+                            amountH = request.POST.getlist('Amount[]')[index]
+                            wamountH = request.POST.getlist('Wamount[]')[index]
+                            OsAmtH = request.POST.getlist('OsAmt[]')[index]
+                            OsAmtHf = float(OsAmtH)
+                            receiv = float(wamountH)+float(amountH)
+                            #print("@15969-OsAmtH",OsAmtHf,"wamountH",wamountH,"amountH",amountH,"receiv",receiv)
+                            if ( float(receiv) > float(OsAmtH)):
+                                #print("@15971-OsAmtH",OsAmtH,"wamountH",wamountH,"amountH",amountH,"receiv",receiv)
+                                
+                                #return render(request,'ifscexcelupload.html')
+                                return HttpResponse('CANNOT update Excess amount than outstanding Amount')
+                            else :
+                                print("16011")
+                                
+                                details_form =  daily_receipts.objects.using(brch).create(
+                                    branch =brch,
+                                    recNo = request.POST.getlist('recNo[]')[index],
+                                    orderNo = request.POST.getlist('OrderNo[]')[index],
+                                    recdate = request.POST.getlist('Recdate[]')[index],
+                                    recType = request.POST.getlist('RecType[]')[index],
+                                    payRefNo = request.POST.getlist('PayRefNo[]')[index],
+                                    amount = request.POST.getlist('Amount[]')[index],
+                                    wamount = request.POST.getlist('Wamount[]')[index],
+                                    remarks = request.POST.getlist('remarks[]')[index],
+                                    entryDate = date.today(),
+                                    entryUser = request.user.username,
+                                    custcode = custCodeH,
+                                #created_by=request.user,            
+                                    )
+                        
+
+                    #for index,j in enumerate(request.POST.getlist('OrderNo[]')):
+                        
+                            #details_form =  daily_sales.objects.using(brch).filter(id=payOrderID).update( 
+                            details_form =  daily_sales.objects.using(brch).filter(orderNo=request.POST.getlist('OrderNo[]')[index]).update(
+                                branch =brch,
+                                orderNo = request.POST.getlist('OrderNo[]')[index],
+                                recDate = request.POST.getlist('Recdate[]')[index],
+                            #recType = request.POST.getlist('RecType[]')[index],
+                                recptNo = request.POST.getlist('recNo[]')[index],
+                                #RecAmount = (request.POST.getlist('Amount[]')[index]),
+                                recRefNo = request.POST.getlist('PayRefNo[]')[index],
+                                remove = request.POST.getlist('remove[]')[index],
+                            #remarks = request.POST.getlist('remarks[]')[index],
+                            #remove= request.POST.getlist('remove[]')[index],
+                            #created_by=request.user,
+                            #crreatedd=datetime.datetime.now(),
+                            #createddd_by=request.user,`    
+                            #create=datetime.datetime.now(),
+                                )
+
+                            details_formSO =  saleorder.objects.using(brch).filter(orderNo=request.POST.getlist('OrderNo[]')[index]).update(
+                                branch =brch,
+                                orderNo = request.POST.getlist('OrderNo[]')[index],
+                                recDate = request.POST.getlist('Recdate[]')[index],
+                                #recType = request.POST.getlist('RecType[]')[index],
+                                recptNo = request.POST.getlist('recNo[]')[index],
+                                #RecAmount = (request.POST.getlist('Amount[]')[index]),
+                                recRefNo = request.POST.getlist('PayRefNo[]')[index],
+                                remove = request.POST.getlist('remove[]')[index],
+                                #remarks = request.POST.getlist('remarks[]')[index],
+                                #remove= request.POST.getlist('remove[]')[index],
+                                #upt_by=request.user,
+                                #crreatedd=datetime.datetime.now(),
+                                #createddd_by=request.user,    
+                                #create=datetime.datetime.now(),
+                                )
+                            
+                            cursor10 = connection.cursor()
+                            #cursor21 = connection.cursor()
+                            #getOrderWise = "select orderno,recDate,sum(amount) ,sum(wamount),max(recno), payRefNo from %s.school_daily_receipts where  recdate = '%s' and orderno = '%s' group by orderno "%(str(brch),str(request.POST.getlist('Recdate[]')[index]),str(request.POST.getlist('OrderNo[]')[index]))
+                            getOrderWise = "select orderno,recDate,sum(amount) ,sum(wamount),max(recno), payRefNo from %s.school_daily_receipts where  orderno = '%s' group by orderno "%(str(brch),str(request.POST.getlist('OrderNo[]')[index]))
+                        
+                            print('@18673',getOrderWise)
+                            cursor10.execute(getOrderWise)
+                    
+                            orderwiseData = cursor10.fetchall()
+                            ordernoI = 0
+                            amountI = 0
+                            dateI = ''
+                            wamountI = 0
+                            recNoI = ''
+                            payRefNoI = ''
+
+                            for row in orderwiseData:
+                                ordernoI = row[0]
+                                #print('@9305',ordernoI)
+                                dateI = row[1]
+                                amountI = row[2]
+
+                                wamountI = row[3]
+
+                                recNoI = row[4]
+                                payRefNoI = row[5]
+                            #custI =  row[5]
+                            #updI =  row[6]                        
+                           
+                            print(amountI)                        
+                            updateOrderwiseRecData = "update %s.school_saleorder set RecAmount = '%s',  WAmount= '%s', recptNo ='%s', recDate = '%s',recRefNo='%s' where orderNo = '%s'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
+                            print('@18699',updateOrderwiseRecData)
+                            cursor10.execute(updateOrderwiseRecData)
+
+                            updateOrderwiseOSData = "update %s.school_saleorder set OSAmount = netAmount-(RecAmount+WAmount) where orderNo = '%s'  "%(str(brch),str(ordernoI)) 
+                            print('@18705',updateOrderwiseRecData)
+                            cursor10.execute(updateOrderwiseOSData)
+
+                            cursor20 = connection.cursor()
+
+                            UpdRecDtlsByZOrderP = "update %s.school_daily_sales ds, %s.school_daily_receipts dr set ds.recdate = dr.recdate , ds.recrefno = dr.payrefno, ds.recptno = dr.recno  where ds.orderno = dr.orderno and ds.custcode = dr.custcode and ds.shift = 'Z' and dr.orderNo = '%s' "%(str(brch),str(brch),str(ordernoI)) 
+                            print('@18709.C20.',UpdRecDtlsByZOrderP,'',)
+                            cursor20.execute(UpdRecDtlsByZOrderP)
+
+
+                            UpdSODtlsByZOrderP = "update %s.school_daily_sales ds, %s.school_saleorder so set ds.PAmt = so.NetAmount , ds.RAmt = so.recAmount, ds.WAmt = so.WAmount, ds.OSAmt=so.OSAmount  where ds.orderno = so.orderno and ds.custcode = so.custcode and ds.shift = 'Z' and so.orderNo = '%s'  "%(str(brch),str(brch),str(ordernoI)) 
+                            print('@18713.C20.',UpdSODtlsByZOrderP)
+                            cursor20.execute(UpdSODtlsByZOrderP)
+
+                        #updateOrderwiseDSRecData = "update %s.school_daily_sales set PAmt = sum(netamount) where orderNo = '%s' and shift = 'Z'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
+                        #print('@18709',updateOrderwiseDSRecData)
+                        #cursor10.execute(updateOrderwiseDSRecData)
+
+                        #updateOrderwiseDSRecData = "update %s.school_daily_sales set RAmt = '%s',  WAmt= '%s', recptNo ='%s', recDate = '%s',recRefNo='%s' where orderNo = '%s' and shift = 'Z'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
+                        #print('@18709',updateOrderwiseDSRecData)
+                        #cursor10.execute(updateOrderwiseDSRecData)
+
+                        #updateOrderwiseDSData = "update %s.school_daily_sales set  OSAmt = PaMT-(RAmt+WAmt) where orderNo = '%s'  "%(str(brch),str(ordernoI)) 
+                        #print('@18713',updateOrderwiseRecData)
+                        #cursor10.execute(updateOrderwiseOSData)
+
+
+                        #cursor15 = connection.cursor()
+                        #saleorderRecupdate = "update %s.school_daily_receipts D ,%s.school_saleorder C set c.RecAmount = sum(D.Amount)  where D.orderno = C.orderno and D.orderno = '%s' "%(str(brch),str(brch),str(request.POST.getlist('OrderNo[]')[index]))
+                        #cursor15.execute(saleorderRecupdate)
+              
+                    #data = daily_receipts.objects.using(brch).filter(remove='Y').delete()
+
+
+                    return redirect('/manage_pic_payments/')
+            return render(request,'updatePICPayments.html',locals())
+        else:
+            return render(request,'index.html',locals())
+    #except Exception as err:
+
+        #messages.error(request,err)
+        return render(request,'updatePICPayments.html',locals())
+
+
+#Year 2021
 def manage_payments(request):  
     #try: 
         if request.session.has_key('name'):
@@ -18754,8 +19018,181 @@ def updatePayments(request):
         #messages.error(request,err)
         return render(request,'updatePayments.html',locals())
 
+##08Jan22
+def updatePICPayments(request):
+   # try:
+        if request.session.has_key('name'):
+            brch = request.user.extendeduser.branch
+            if request.user.extendeduser.branch == brch:
+                #Dailyreceipts = daily_receipts.objects.using(brch).filter().distinct()
+                #Dailysales = daily_sales.objects.using(brch).filter().distinct()
+                
+                if request.method == "POST":
+                    #recdateH = request.POST["date_t2"]
+                    #recdateH ="2021-10-28"
+                    
+                    #print('@8803',request.POST['orderdateT']  )
+                    
+                    custCodeH = request.POST["custCodeR"] 
 
-## 04-01-22
+                    #print('@8802',request.POST['custCodeR'],   )
+
+                    Dailysales4R = daily_sales.objects.using(brch).filter(custcode=request.POST["custCodeR"]).distinct()
+                    
+                    for index,j in enumerate(request.POST.getlist('OrderNo[]')):
+                        
+                        payRecValue = request.POST.getlist('remove[]')[index]
+                        payOrderID = request.POST.getlist('dsrid1[]')[index]
+                        #print("@8865-payRecValue",payRecValue,"orderID",payOrderID)
+                        if payRecValue == "P" :
+                            amountH = request.POST.getlist('Amount[]')[index]
+                            wamountH = request.POST.getlist('Wamount[]')[index]
+                            OsAmtH = request.POST.getlist('OsAmt[]')[index]
+                            OsAmtHf = float(OsAmtH)
+                            receiv = float(wamountH)+float(amountH)
+                            #print("@15969-OsAmtH",OsAmtHf,"wamountH",wamountH,"amountH",amountH,"receiv",receiv)
+                            if ( float(receiv) > float(OsAmtH)):
+                                #print("@15971-OsAmtH",OsAmtH,"wamountH",wamountH,"amountH",amountH,"receiv",receiv)
+                                
+                                #return render(request,'ifscexcelupload.html')
+                                return HttpResponse('CANNOT update Excess amount than outstanding Amount')
+                            else :
+                                print("16011")
+                                
+                                details_form =  daily_receipts.objects.using(brch).create(
+                                    branch =brch,
+                                    recNo = request.POST.getlist('recNo[]')[index],
+                                    orderNo = request.POST.getlist('OrderNo[]')[index],
+                                    recdate = request.POST.getlist('Recdate[]')[index],
+                                    recType = request.POST.getlist('RecType[]')[index],
+                                    payRefNo = request.POST.getlist('PayRefNo[]')[index],
+                                    amount = request.POST.getlist('Amount[]')[index],
+                                    wamount = request.POST.getlist('Wamount[]')[index],
+                                    remarks = request.POST.getlist('remarks[]')[index],
+                                    entryDate = date.today(),
+                                    entryUser = request.user.username,
+                                    custcode = custCodeH,
+                                #created_by=request.user,            
+                                    )
+                        
+
+                    #for index,j in enumerate(request.POST.getlist('OrderNo[]')):
+                        
+                            #details_form =  daily_sales.objects.using(brch).filter(id=payOrderID).update( 
+                            details_form =  daily_sales.objects.using(brch).filter(orderNo=request.POST.getlist('OrderNo[]')[index]).update(
+                                branch =brch,
+                                orderNo = request.POST.getlist('OrderNo[]')[index],
+                                recDate = request.POST.getlist('Recdate[]')[index],
+                            #recType = request.POST.getlist('RecType[]')[index],
+                                recptNo = request.POST.getlist('recNo[]')[index],
+                                #RecAmount = (request.POST.getlist('Amount[]')[index]),
+                                recRefNo = request.POST.getlist('PayRefNo[]')[index],
+                                remove = request.POST.getlist('remove[]')[index],
+                            #remarks = request.POST.getlist('remarks[]')[index],
+                            #remove= request.POST.getlist('remove[]')[index],
+                            #created_by=request.user,
+                            #crreatedd=datetime.datetime.now(),
+                            #createddd_by=request.user,`    
+                            #create=datetime.datetime.now(),
+                                )
+
+                            details_formSO =  saleorder.objects.using(brch).filter(orderNo=request.POST.getlist('OrderNo[]')[index]).update(
+                                branch =brch,
+                                orderNo = request.POST.getlist('OrderNo[]')[index],
+                                recDate = request.POST.getlist('Recdate[]')[index],
+                                #recType = request.POST.getlist('RecType[]')[index],
+                                recptNo = request.POST.getlist('recNo[]')[index],
+                                #RecAmount = (request.POST.getlist('Amount[]')[index]),
+                                recRefNo = request.POST.getlist('PayRefNo[]')[index],
+                                remove = request.POST.getlist('remove[]')[index],
+                                #remarks = request.POST.getlist('remarks[]')[index],
+                                #remove= request.POST.getlist('remove[]')[index],
+                                #upt_by=request.user,
+                                #crreatedd=datetime.datetime.now(),
+                                #createddd_by=request.user,    
+                                #create=datetime.datetime.now(),
+                                )
+                            
+                            cursor10 = connection.cursor()
+                            #cursor21 = connection.cursor()
+                            #getOrderWise = "select orderno,recDate,sum(amount) ,sum(wamount),max(recno), payRefNo from %s.school_daily_receipts where  recdate = '%s' and orderno = '%s' group by orderno "%(str(brch),str(request.POST.getlist('Recdate[]')[index]),str(request.POST.getlist('OrderNo[]')[index]))
+                            getOrderWise = "select orderno,recDate,sum(amount) ,sum(wamount),max(recno), payRefNo from %s.school_daily_receipts where  orderno = '%s' group by orderno "%(str(brch),str(request.POST.getlist('OrderNo[]')[index]))
+                        
+                            print('@18673',getOrderWise)
+                            cursor10.execute(getOrderWise)
+                    
+                            orderwiseData = cursor10.fetchall()
+                            ordernoI = 0
+                            amountI = 0
+                            dateI = ''
+                            wamountI = 0
+                            recNoI = ''
+                            payRefNoI = ''
+
+                            for row in orderwiseData:
+                                ordernoI = row[0]
+                                #print('@9305',ordernoI)
+                                dateI = row[1]
+                                amountI = row[2]
+
+                                wamountI = row[3]
+
+                                recNoI = row[4]
+                                payRefNoI = row[5]
+                            #custI =  row[5]
+                            #updI =  row[6]                        
+                           
+                            print(amountI)                        
+                            updateOrderwiseRecData = "update %s.school_saleorder set RecAmount = '%s',  WAmount= '%s', recptNo ='%s', recDate = '%s',recRefNo='%s' where orderNo = '%s'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
+                            print('@18699',updateOrderwiseRecData)
+                            cursor10.execute(updateOrderwiseRecData)
+
+                            updateOrderwiseOSData = "update %s.school_saleorder set OSAmount = netAmount-(RecAmount+WAmount) where orderNo = '%s'  "%(str(brch),str(ordernoI)) 
+                            print('@18705',updateOrderwiseRecData)
+                            cursor10.execute(updateOrderwiseOSData)
+
+                            cursor20 = connection.cursor()
+
+                            UpdRecDtlsByZOrderP = "update %s.school_daily_sales ds, %s.school_daily_receipts dr set ds.recdate = dr.recdate , ds.recrefno = dr.payrefno, ds.recptno = dr.recno  where ds.orderno = dr.orderno and ds.custcode = dr.custcode and ds.shift = 'Z' and dr.orderNo = '%s' "%(str(brch),str(brch),str(ordernoI)) 
+                            print('@18709.C20.',UpdRecDtlsByZOrderP,'',)
+                            cursor20.execute(UpdRecDtlsByZOrderP)
+
+
+                            UpdSODtlsByZOrderP = "update %s.school_daily_sales ds, %s.school_saleorder so set ds.PAmt = so.NetAmount , ds.RAmt = so.recAmount, ds.WAmt = so.WAmount, ds.OSAmt=so.OSAmount  where ds.orderno = so.orderno and ds.custcode = so.custcode and ds.shift = 'Z' and so.orderNo = '%s'  "%(str(brch),str(brch),str(ordernoI)) 
+                            print('@18713.C20.',UpdSODtlsByZOrderP)
+                            cursor20.execute(UpdSODtlsByZOrderP)
+
+                        #updateOrderwiseDSRecData = "update %s.school_daily_sales set PAmt = sum(netamount) where orderNo = '%s' and shift = 'Z'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
+                        #print('@18709',updateOrderwiseDSRecData)
+                        #cursor10.execute(updateOrderwiseDSRecData)
+
+                        #updateOrderwiseDSRecData = "update %s.school_daily_sales set RAmt = '%s',  WAmt= '%s', recptNo ='%s', recDate = '%s',recRefNo='%s' where orderNo = '%s' and shift = 'Z'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
+                        #print('@18709',updateOrderwiseDSRecData)
+                        #cursor10.execute(updateOrderwiseDSRecData)
+
+                        #updateOrderwiseDSData = "update %s.school_daily_sales set  OSAmt = PaMT-(RAmt+WAmt) where orderNo = '%s'  "%(str(brch),str(ordernoI)) 
+                        #print('@18713',updateOrderwiseRecData)
+                        #cursor10.execute(updateOrderwiseOSData)
+
+
+                        #cursor15 = connection.cursor()
+                        #saleorderRecupdate = "update %s.school_daily_receipts D ,%s.school_saleorder C set c.RecAmount = sum(D.Amount)  where D.orderno = C.orderno and D.orderno = '%s' "%(str(brch),str(brch),str(request.POST.getlist('OrderNo[]')[index]))
+                        #cursor15.execute(saleorderRecupdate)
+              
+                    #data = daily_receipts.objects.using(brch).filter(remove='Y').delete()
+
+
+                    return redirect('/manage_pic_payments/')
+            return render(request,'updatePICPayments.html',locals())
+        else:
+            return render(request,'index.html',locals())
+    #except Exception as err:
+
+        #messages.error(request,err)
+        return render(request,'updatePICPayments.html',locals())
+
+
+##08-01-22
 
 def modify_payments(request):  
     #try: 
@@ -18763,17 +19200,10 @@ def modify_payments(request):
             brch = request.user.extendeduser.branch             
             if request.user.extendeduser.branch == brch :
 
-                #getSalesData = "select distinct d.id, d.custCode custcode, c.custName from  %s.school_saleorder d left join %s.school_daily_receipts R on R.orderno = d.orderno and netAmount > 0 and (RecAmount = 0 or RecAmount < netAmount  ) left join  %s.school_customer c on c.custCode = d.custCode group by c.custname,d.orderno order by c.custname,d.orderno "%(str(brch),str(brch),str(brch)) 
-                #getSalesData = "select distinct S.id, C.custCode custcode, C.custName, sum(OSAmount) osamt from  %s.school_saleorder S,  %s.school_customer C where C.custCode = S.custcode and date>= '2021-11-01' and netAmount > 0 and osAmount > 0 group by C.custCode order by C.custName "%(str(brch),str(brch)) 
                 getSalesData = "select distinct S.id, C.custCode custcode, C.custName, sum(RecAmount) recamt, sum(OSAmount) osamt from  %s.school_saleorder S,  %s.school_customer C where C.custCode = S.custcode and netAmount > 0  group by C.custCode order by C.custName "%(str(brch),str(brch)) 
-                #getSalesData = "select distinct d.id, d.custCode custcode, c.custName , sum(d.netAmount) nAmt,sum(d.netAmount)-sum(R.Amount) OsAmt, sum(R.Amount) recAmount from  %s.school_daily_sales d left join %s.school_daily_receipts R on R.orderno = d.orderno and netAmount > 0 and (RecAmount = 0 or RecAmount < netAmount  ) left join  %s.school_customer c on c.custCode = d.custCode group by c.custname,d.orderno order by c.custname,d.orderno "%(str(brch),str(brch),str(brch)) 
-                #getSalesDataNOK = "select distinct d.id, d.custCode custcode, c.custName custName, sum(d.netAmount-RecAmount) OsAmt from %s.school_daily_sales d , %s.school_customer c  where c.custcode = d.custCode and netAmount > 0 and (RecAmount = 0 or RecAmount < netAmount  ) group by custName order by custName"%(str(brch),str(brch))                
                 print('@18762',getSalesData)
                 DailysalesC = saleorder.objects.using(brch).raw(getSalesData)
-
-                #Dailysales = daily_sales.objects.using(brch).filter(RecAmount = 0 and RecAmount < netAmount).distinct()
-                #Dailyreceipts = daily_receipts.objects.using(brch).filter().distinct()
-               
+                
 
                 if request.method == "POST":
                     #orderdateF = request.POST['orderDateF']
@@ -18781,26 +19211,10 @@ def modify_payments(request):
                     #orderdateT = request.POST['orderDateT']  
                     customer1 = request.POST['custCodeR']
                     custCodeR =  customer1
-                    #orderno1 = request.POST['orderNoP'] 
-                    #print('@8777',orderno1)                    
-                    #print('#15923-orderdateF',orderdateF,'orderdateT',orderdateT,'custCodeR',custCodeR)
-                    #getSaleDataP = "select distinct  s.* from %s.school_daily_sales s Where (date = '%s' or custcode = '%s' or orderNo = '%s') and recamount < netAmount  "%(str(brch),str(orderdate1),str(customer1),str(orderno1))  
-                   # getSaleDataP = "select distinct s.* from %s.school_daily_sales s Where (date = '%s' and custcode = '%s' and orderNo = '%s') and (recamount = 0 and recamount < netAmount)  "%(str(brch),str(orderdate1),str(customer1),str(orderno1))  
+                    #8Jan22#getSaleOrderwiseData = " select distinct d.id ssid, r.id recid, d.id, d.orderNo,d.remarks, r.recno, max(r.recDate) recDate, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,d.recAmount recAmt ,   d.OsAmount OsAmt  from  %s.school_daily_receipts r , %s.school_saleorder d  ,   %s.school_customer c where c.custCode = d.custCode and d.orderno = r.orderno  and (d.custCode = '%s'  ) group by d.custcode,d.orderno order by d.date,d.custcode,d.orderno " %(str(brch),str(brch),str(brch),str(customer1)) 
+                    #Tula#getSaleOrderwiseData = " select distinct d.id ssid, r.id recid, d.id, r.orderNo,d.remarks, r.recno, max(r.recDate) recDate, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,r.amount recAmt ,   d.OsAmount OsAmt  from  %s.school_daily_receipts r , %s.school_saleorder d  ,   %s.school_customer c where c.custCode = d.custCode and d.orderno = r.orderno  and (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) > 0 ) group by d.custcode,r.id order by d.date,d.custcode  " %(str(brch),str(brch),str(brch),str(customer1))
+                    getSaleOrderwiseData = " select distinct d.id ssid, r.id recid, d.id, r.orderNo,d.remarks, r.recno, r.recDate, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,r.amount recAmt ,   d.OsAmount OsAmt  from  %s.school_daily_receipts r , %s.school_saleorder d  ,   %s.school_customer c where c.custCode = d.custCode and d.orderno = r.orderno  and (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) > 0 ) order by r.orderno,r.id,d.date,d.custcode  " %(str(brch),str(brch),str(brch),str(customer1))
                     
-                    ##getMaxRecNoQry = "select id,COALESCE(max(recNo),1), COALESCE(max(recNo)+1,1) newRecNo from %s.school_daily_receipts"%(str(brch))                
-                    ##getMaxrecID =daily_receipts.objects.using(brch).raw(getMaxRecNoQry)
-
-                    #getSaleDataP = "select distinct s.id ssid, s.*, left(sysdate(),10) cdate, sum(d.netAmount-RecAmount) OsAmt, c.custName custName from %s.school_daily_sales s Where (custcode = '%s' ) and (recamount = 0 or recamount < netAmount)  %s.school_daily_sales d , %s.school_customer c  where (custcode = '%s' ) and c.custcode = d.custCode and netAmount > 0 and (RecAmount = 0 or RecAmount < netAmount  ) group by custName order by custName "%(str(brch),str(brch),str(customer1))  
-                    #getSaleDataPNOK = "select distinct d.id ssid, d.*, left(sysdate(),10) cdate, sum(d.netAmount-RecAmount) OsAmt, c.custName custName from  %s.school_daily_sales d , %s.school_customer c  where (d.custcode = '%s' ) and c.custcode = d.custCode and netAmount > 0 and (RecAmount = 0 or RecAmount < netAmount  ) group by custName order by custName "%(str(brch),str(brch),str(customer1))  
-                    
-                    #getSaleDataPN = "select distinct d.id ssid, d.id, d.orderNo,d.remarks, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , sum(d.netAmount) nAmt, round((sum(COALESCE(d.netAmount),0)-sum(COALESCE(R.Amount),0),2) OsAmt, sum(COALESCE(R.Amount),0) recAmount from  %s.school_daily_sales d  join  %s.school_customer c on c.custCode = d.custCode and (d.custCode = '%s' ) left join %s.school_daily_receipts R on R.orderno = d.orderno and netAmount > 0 and (R.Amount = 0 or R.Amount < netAmount  ) and (d.custCode = '%s' )  group by d.custcode,d.orderno order by d.custcode,d.orderno " %(str(brch),str(brch),str(customer1),str(brch),str(customer1)) 
-                    #getSaleOrderwiseData_RnotRequired= "select distinct d.id ssid, d.id, d.orderNo,d.updatedd remarks, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,   ( d.netAmount - sum( COALESCE(R.Amount,0) ) ) OsAmt,  sum(COALESCE(R.Amount,0)) recAmount  from  %s.school_saleorder d  join  %s.school_customer c on c.custCode = d.custCode and (d.custCode = '%s' ) left join %s.school_daily_receipts R on R.orderno = d.orderno and netAmount > 0 and (R.Amount = 0 or R.Amount < netAmount  ) and (d.custCode = '%s' )  group by d.custcode,d.orderno order by d.custcode,d.orderno " %(str(brch),str(brch),str(customer1),str(brch),str(customer1)) 
-                    #print('@8779',getSaleOrderwiseData)
-                    #getSaleOrderwiseData = " select distinct d.id ssid, d.id, d.orderNo,d.updatedd remarks, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,   ( sum(d.netAmount) - sum(COALESCE(d.recAmount,0))  ) OsAmt  from  %s.school_saleorder d  join  %s.school_customer c on c.custCode = d.custCode and (d.custCode = '%s' )  and recamount < netamount group by d.custcode,d.orderno order by d.custcode,d.orderno" %(str(brch),str(brch),str(customer1)) 
-                    #getSaleOrderwiseData = " select distinct d.id ssid, d.id, d.orderNo,d.remarks, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,   ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt  from  %s.school_saleorder d  join  %s.school_customer c on c.custCode = d.custCode and (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount) and d.date >='2021-11-01' group by d.custcode,d.orderno order by d.date,d.custcode,d.orderno " %(str(brch),str(brch),str(customer1)) 
-                    ##getSaleOrderwiseData = " select distinct d.id ssid, d.id, d.orderNo,d.remarks, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,   ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt  from  %s.school_saleorder d  join  %s.school_customer c on c.custCode = d.custCode and (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount) group by d.custcode,d.orderno order by d.date,d.custcode,d.orderno " %(str(brch),str(brch),str(customer1)) 
-                    getSaleOrderwiseData = " select distinct d.id ssid, r.id recid, d.id, d.orderNo,d.remarks, r.recno, max(r.recDate) recDate, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,d.recAmount recAmt ,   d.OsAmount OsAmt  from  %s.school_daily_receipts r , %s.school_saleorder d  ,   %s.school_customer c where c.custCode = d.custCode and d.orderno = r.orderno  and (d.custCode = '%s'  ) group by d.custcode,d.orderno order by d.date,d.custcode,d.orderno " %(str(brch),str(brch),str(brch),str(customer1)) 
-
                     print('@18796',getSaleOrderwiseData)
                     
                     dr2 = saleorder.objects.using(brch).raw(getSaleOrderwiseData) 
@@ -18821,65 +19235,96 @@ def modify_payments(request):
        # messages.error(request,err)
         return render(request,'modify_payments.html',locals())
 
-## 06-12-21
+
+## 08-01-22
 @csrf_exempt
 def modifyPaymentsTotal(request):
     total_sum = 0.0
+    diff = []
     if request.method == 'POST':
 
 
         for index,j in enumerate(request.POST.getlist('OrderNo[]')):
-           
+            amountH = request.POST.getlist('Amount[]')[index]
             payRecValue = request.POST.getlist('remove[]')[index]
+            recAmt = request.POST.getlist('recAmtx[]')[index]
+            diff_amt =  float(amountH) - float(recAmt)
             if payRecValue == "P" :
                 amountH = request.POST.getlist('Amount[]')[index]
                 total_sum += float(amountH)
+            diff.append([index+1 , diff_amt])
                 #print(total_sum)
 
-    return HttpResponse(total_sum)
+    return JsonResponse({'total_sum':total_sum,'diff':diff},safe = False)
+
 
 def modifyPayments(request):
    # try:
         if request.session.has_key('name'):
             brch = request.user.extendeduser.branch
             if request.user.extendeduser.branch == brch:
-                #Dailyreceipts = daily_receipts.objects.using(brch).filter().distinct()
-                #Dailysales = daily_sales.objects.using(brch).filter().distinct()
-                
+                    
                 if request.method == "POST":
-                    #recdateH = request.POST["date_t2"]
-                    #recdateH ="2021-10-28"
-                    
-                    #print('@8803',request.POST['orderdateT']  )
-                    
+                         
                     custCodeH = request.POST["custCodeR"] 
 
                     #print('@8802',request.POST['custCodeR'],   )
 
                     Dailysales4R = daily_sales.objects.using(brch).filter(custcode=request.POST["custCodeR"]).distinct()
-                    
-                    for index,j in enumerate(request.POST.getlist('recNo[]')):
+                    payOrderNoPrev = 0
+                    tot_amt = 0
+                    for index,j in enumerate(request.POST.getlist('dsrid1[]')):
+
                         
-                        payRecValue = request.POST.getlist('remove[]')[index]
                         payOrderID = request.POST.getlist('dsrid1[]')[index]
-                        #print("@8865-payRecValue",payRecValue,"orderID",payOrderID)
+                        payRecValue = request.POST.getlist('remove[]')[index]
+                        amountH = request.POST.getlist('Amount[]')[index]
+                        payOrderNo = request.POST.getlist('OrderNo[]')[index]
+                        wamountH = request.POST.getlist('Wamount[]')[index]
+                        nAmtH =  request.POST.getlist('nAmt[]')[index]
+                        receiv = float(wamountH)+float(amountH)
+                        if payOrderNoPrev == 0:
+                            payOrderNoPrev = payOrderNo
+                        print('@18851 '+payOrderNo+ ' '+ payOrderNoPrev)
+                        if payOrderNoPrev == payOrderNo:
+                            
+                            tot_amt += float(amountH) + float(wamountH)
+                            print('@18852 '+str(tot_amt)+' '+ nAmtH)
+                        else:
+                            tot_amt = 0
+                            payOrderNoPrev = payOrderNo
+                            tot_amt += float(amountH) + float(wamountH)
+                        
+                        if (float(tot_amt) > float(nAmtH)):
+                            return JsonResponse(['CANNOT update Excess amount than Bill Amount OrderNo',payOrderNo], safe= False)
+                        payRecNo = request.POST.getlist('recNo[]')[index]
+                        print("@18873-payRecValue",payRecValue,"Recid",payOrderID,"recNo",payRecNo)
+                        
+
                         if payRecValue == "P" :
                             amountH = request.POST.getlist('Amount[]')[index]
+                            print("@18876-amountH",amountH,"Recid",payOrderID,"recNo",payRecNo)                            
                             wamountH = request.POST.getlist('Wamount[]')[index]
                             PrevDate = request.POST.getlist('recDatex[]')[index]
                             PrevAmt = request.POST.getlist('recAmtx[]')[index]
                             RemH = "Amount" , PrevAmt,"Date",PrevDate
+                            nAmtH =  request.POST.getlist('nAmt[]')[index]
                             OsAmtH = request.POST.getlist('OsAmt[]')[index]
                             OsAmtHf = float(OsAmtH)
+
                             receiv = float(wamountH)+float(amountH)
+                            # tot_rec += receiv
+                            print('@18856 '+str(receiv))
+                            print('@18857 '+str(tot_amt))
                             #print("@15969-OsAmtH",OsAmtHf,"wamountH",wamountH,"amountH",amountH,"receiv",receiv)
-                            if ( float(receiv) > float(OsAmtH)):
-                                #print("@15971-OsAmtH",OsAmtH,"wamountH",wamountH,"amountH",amountH,"receiv",receiv)
+                            ## CHnaged here comparing with NetAmount i/o osamt
+                            if ( float(receiv) > float(nAmtH)) or ( float(tot_amt) > float(nAmtH)):
+                                print("@18888-OsAmtH",OsAmtH,"wamountH",wamountH,"amountH",amountH,"receiv",receiv,"nAmtH",nAmtH)
                                 
                                 #return render(request,'ifscexcelupload.html')
-                                return HttpResponse('CANNOT update Excess amount than outstanding Amount')
+                                return JsonResponse(['CANNOT update Excess amount than Bill Amount OrderNo',payOrderNo],safe = False)
                             else :
-                                print("16011")
+                                print("18893")
                                 
                                 details_form =  daily_receipts.objects.using(brch).filter(id=request.POST.getlist('dsrid1[]')[index]).update(
                                     branch =brch,
@@ -18888,7 +19333,250 @@ def modifyPayments(request):
                                     recdate = request.POST.getlist('Recdate[]')[index],
                                     recType = request.POST.getlist('RecType[]')[index],
                                     payRefNo = request.POST.getlist('PayRefNo[]')[index],
-                                    amount = request.POST.getlist('Amount[]')[index],
+                                    amount = request.POST.getlist('Amount[]')[index],                                    
+                                    wamount = request.POST.getlist('Wamount[]')[index],
+                                    remarks = request.POST.getlist('remarks[]')[index],
+                                    updRemarks = RemH,
+                                    updateDate = date.today(),
+                                    updateUser = request.user.username,
+                                    custcode = custCodeH,
+                                #created_by=request.user,            
+                                    )
+                        
+
+                    #for index,j in enumerate(request.POST.getlist('OrderNo[]')):
+                        
+                            #details_form =  daily_sales.objects.using(brch).filter(id=payOrderID).update( 
+                            details_form =  daily_sales.objects.using(brch).filter(orderNo=request.POST.getlist('OrderNo[]')[index]).update(
+                                branch =brch,
+                                orderNo = request.POST.getlist('OrderNo[]')[index],
+                                recDate = request.POST.getlist('Recdate[]')[index],
+                            #recType = request.POST.getlist('RecType[]')[index],
+                                recptNo = request.POST.getlist('recNo[]')[index],
+                                #RecAmount = (request.POST.getlist('Amount[]')[index]),
+                                recRefNo = request.POST.getlist('PayRefNo[]')[index],
+                                remove = request.POST.getlist('remove[]')[index],
+                            #remarks = request.POST.getlist('remarks[]')[index],
+                            #remove= request.POST.getlist('remove[]')[index],
+                            #created_by=request.user,
+                            #crreatedd=datetime.datetime.now(),
+                            #createddd_by=request.user,`    
+                            #create=datetime.datetime.now(),
+                                )
+
+                            details_formSO =  saleorder.objects.using(brch).filter(orderNo=request.POST.getlist('OrderNo[]')[index]).update(
+                                branch =brch,
+                                orderNo = request.POST.getlist('OrderNo[]')[index],
+                                recDate = request.POST.getlist('Recdate[]')[index],
+                                #recType = request.POST.getlist('RecType[]')[index],
+                                recptNo = request.POST.getlist('recNo[]')[index],
+                                #RecAmount = (request.POST.getlist('Amount[]')[index]),
+                                recRefNo = request.POST.getlist('PayRefNo[]')[index],
+                                remove = request.POST.getlist('remove[]')[index],
+                                #remarks = request.POST.getlist('remarks[]')[index],
+                                #remove= request.POST.getlist('remove[]')[index],
+                                #upt_by=request.user,
+                                #crreatedd=datetime.datetime.now(),
+                                #createddd_by=request.user,    
+                                #create=datetime.datetime.now(),
+                                )
+                            
+                            cursor10 = connection.cursor()
+                            #cursor21 = connection.cursor()
+                            #getOrderWise = "select orderno,recDate,sum(amount) ,sum(wamount),max(recno), payRefNo from %s.school_daily_receipts where  recdate = '%s' and orderno = '%s' group by orderno "%(str(brch),str(request.POST.getlist('Recdate[]')[index]),str(request.POST.getlist('OrderNo[]')[index]))
+                            getOrderWise = "select orderno,recDate,sum(amount) ,sum(wamount),max(recno), payRefNo from %s.school_daily_receipts where  orderno = '%s' group by orderno "%(str(brch),str(request.POST.getlist('OrderNo[]')[index]))
+                        
+                            print('@18673',getOrderWise)
+                            cursor10.execute(getOrderWise)
+                    
+                            orderwiseData = cursor10.fetchall()
+                            ordernoI = 0
+                            amountI = 0
+                            dateI = ''
+                            wamountI = 0
+                            recNoI = ''
+                            payRefNoI = ''
+
+                            for row in orderwiseData:
+                                ordernoI = row[0]
+                                #print('@9305',ordernoI)
+                                dateI = row[1]
+                                amountI = row[2]
+
+                                wamountI = row[3]
+
+                                recNoI = row[4]
+                                payRefNoI = row[5]
+                            #custI =  row[5]
+                            #updI =  row[6]                        
+                           
+                            print(amountI)                        
+                            updateOrderwiseRecData = "update %s.school_saleorder set RecAmount = '%s',  WAmount= '%s', recptNo ='%s', recDate = '%s',recRefNo='%s' where orderNo = '%s'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
+                            print('@18699',updateOrderwiseRecData)
+                            cursor10.execute(updateOrderwiseRecData)
+
+                            updateOrderwiseOSData = "update %s.school_saleorder set OSAmount = netAmount-(RecAmount+WAmount) where orderNo = '%s'  "%(str(brch),str(ordernoI)) 
+                            print('@18705',updateOrderwiseRecData)
+                            cursor10.execute(updateOrderwiseOSData)
+
+                            cursor20 = connection.cursor()
+
+                            UpdRecDtlsByZOrderP = "update %s.school_daily_sales ds, %s.school_daily_receipts dr set ds.recdate = dr.recdate , ds.recrefno = dr.payrefno, ds.recptno = dr.recno  where ds.orderno = dr.orderno and ds.custcode = dr.custcode and ds.shift = 'Z' and dr.orderNo = '%s' "%(str(brch),str(brch),str(ordernoI)) 
+                            print('@18709.C20.',UpdRecDtlsByZOrderP,'',)
+                            cursor20.execute(UpdRecDtlsByZOrderP)
+
+
+                            UpdSODtlsByZOrderP = "update %s.school_daily_sales ds, %s.school_saleorder so set ds.PAmt = so.NetAmount , ds.RAmt = so.recAmount, ds.WAmt = so.WAmount, ds.OSAmt=so.OSAmount  where ds.orderno = so.orderno and ds.custcode = so.custcode and ds.shift = 'Z' and so.orderNo = '%s'  "%(str(brch),str(brch),str(ordernoI)) 
+                            print('@18713.C20.',UpdSODtlsByZOrderP)
+                            cursor20.execute(UpdSODtlsByZOrderP)
+
+                        payOrderNoPrev = payOrderNo
+
+                        #updateOrderwiseDSRecData = "update %s.school_daily_sales set PAmt = sum(netamount) where orderNo = '%s' and shift = 'Z'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
+                        #print('@18709',updateOrderwiseDSRecData)
+                        #cursor10.execute(updateOrderwiseDSRecData)
+
+                        #updateOrderwiseDSRecData = "update %s.school_daily_sales set RAmt = '%s',  WAmt= '%s', recptNo ='%s', recDate = '%s',recRefNo='%s' where orderNo = '%s' and shift = 'Z'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
+                        #print('@18709',updateOrderwiseDSRecData)
+                        #cursor10.execute(updateOrderwiseDSRecData)
+
+                        #updateOrderwiseDSData = "update %s.school_daily_sales set  OSAmt = PaMT-(RAmt+WAmt) where orderNo = '%s'  "%(str(brch),str(ordernoI)) 
+                        #print('@18713',updateOrderwiseRecData)
+                        #cursor10.execute(updateOrderwiseOSData)
+
+
+                        #cursor15 = connection.cursor()
+                        #saleorderRecupdate = "update %s.school_daily_receipts D ,%s.school_saleorder C set c.RecAmount = sum(D.Amount)  where D.orderno = C.orderno and D.orderno = '%s' "%(str(brch),str(brch),str(request.POST.getlist('OrderNo[]')[index]))
+                        #cursor15.execute(saleorderRecupdate)
+              
+                    #data = daily_receipts.objects.using(brch).filter(remove='Y').delete()
+
+
+                    return redirect('/modify_payments/')
+            return render(request,'modifyPayments.html',locals())
+        else:
+            return render(request,'index.html',locals())
+    #except Exception as err:
+
+        #messages.error(request,err)
+        return render(request,'modifyPayments.html',locals())
+
+## 04-01-22
+
+def modify_payments_1822(request):  
+    #try: 
+        if request.session.has_key('name'):
+            brch = request.user.extendeduser.branch             
+            if request.user.extendeduser.branch == brch :
+
+                getSalesData = "select distinct S.id, C.custCode custcode, C.custName, sum(RecAmount) recamt, sum(OSAmount) osamt from  %s.school_saleorder S,  %s.school_customer C where C.custCode = S.custcode and netAmount > 0  group by C.custCode order by C.custName "%(str(brch),str(brch)) 
+                print('@18762',getSalesData)
+                DailysalesC = saleorder.objects.using(brch).raw(getSalesData)
+                
+
+                if request.method == "POST":
+                    #orderdateF = request.POST['orderDateF']
+                    
+                    #orderdateT = request.POST['orderDateT']  
+                    customer1 = request.POST['custCodeR']
+                    custCodeR =  customer1
+                    #8Jan22#getSaleOrderwiseData = " select distinct d.id ssid, r.id recid, d.id, d.orderNo,d.remarks, r.recno, max(r.recDate) recDate, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,d.recAmount recAmt ,   d.OsAmount OsAmt  from  %s.school_daily_receipts r , %s.school_saleorder d  ,   %s.school_customer c where c.custCode = d.custCode and d.orderno = r.orderno  and (d.custCode = '%s'  ) group by d.custcode,d.orderno order by d.date,d.custcode,d.orderno " %(str(brch),str(brch),str(brch),str(customer1)) 
+                    #Tula#getSaleOrderwiseData = " select distinct d.id ssid, r.id recid, d.id, r.orderNo,d.remarks, r.recno, max(r.recDate) recDate, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,r.amount recAmt ,   d.OsAmount OsAmt  from  %s.school_daily_receipts r , %s.school_saleorder d  ,   %s.school_customer c where c.custCode = d.custCode and d.orderno = r.orderno  and (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) > 0 ) group by d.custcode,r.id order by d.date,d.custcode  " %(str(brch),str(brch),str(brch),str(customer1))
+                    getSaleOrderwiseData = " select distinct d.id ssid, r.id recid, d.id, r.orderNo,d.remarks, r.recno, r.recDate, d.date orderdate, left(sysdate(),10) cdate,  d.custCode custcode, c.custName , d.netAmount nAmt ,r.amount recAmt ,   d.OsAmount OsAmt  from  %s.school_daily_receipts r , %s.school_saleorder d  ,   %s.school_customer c where c.custCode = d.custCode and d.orderno = r.orderno  and (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) > 0 ) order by r.orderno,r.id,d.date,d.custcode  " %(str(brch),str(brch),str(brch),str(customer1))
+                    
+                    print('@18796',getSaleOrderwiseData)
+                    
+                    dr2 = saleorder.objects.using(brch).raw(getSaleOrderwiseData) 
+                   
+                    #getOsAmt = " select distinct d.id ssid, d.id,  ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt , sum(OSAmount) sOSAmount from  %s.school_saleorder d where (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount) and d.date >='2021-11-01' group by d.custcode  " %(str(brch),str(customer1)) 
+                    getOsAmt = " select distinct d.id ssid, d.id,  ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt , sum(OSAmount) sOSAmount from  %s.school_saleorder d where (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount)  group by d.custcode  " %(str(brch),str(customer1)) 
+
+                    #print('@8779',getSaleOrderwiseData)
+                    
+                    os2 = saleorder.objects.using(brch).raw(getOsAmt) 
+                   
+
+            return render(request,'modify_payments.html',locals())
+        else:
+            return render(request,'index.html',locals())
+    #except Exception as err:
+
+       # messages.error(request,err)
+        return render(request,'modify_payments.html',locals())
+
+
+## 08-01-22
+@csrf_exempt
+def modifyPaymentsTotal_1822(request):
+    total_sum = 0.0
+    diff = []
+    if request.method == 'POST':
+
+
+        for index,j in enumerate(request.POST.getlist('OrderNo[]')):
+            amountH = request.POST.getlist('Amount[]')[index]
+            payRecValue = request.POST.getlist('remove[]')[index]
+            recAmt = request.POST.getlist('recAmtx[]')[index]
+            diff_amt =  float(amountH) - float(recAmt)
+            if payRecValue == "P" :
+                amountH = request.POST.getlist('Amount[]')[index]
+                total_sum += float(amountH)
+            diff.append([index+1 , diff_amt])
+                #print(total_sum)
+
+    return JsonResponse({'total_sum':total_sum,'diff':diff},safe = False)
+
+
+def modifyPayments_1822(request):
+   # try:
+        if request.session.has_key('name'):
+            brch = request.user.extendeduser.branch
+            if request.user.extendeduser.branch == brch:
+                    
+                if request.method == "POST":
+                         
+                    custCodeH = request.POST["custCodeR"] 
+
+                    #print('@8802',request.POST['custCodeR'],   )
+
+                    Dailysales4R = daily_sales.objects.using(brch).filter(custcode=request.POST["custCodeR"]).distinct()
+                    
+                    for index,j in enumerate(request.POST.getlist('dsrid1[]')):
+                        
+                        payRecValue = request.POST.getlist('remove[]')[index]
+                        payOrderID = request.POST.getlist('dsrid1[]')[index]
+                        payRecNo = request.POST.getlist('recNo[]')[index]
+                        print("@18873-payRecValue",payRecValue,"Recid",payOrderID,"recNo",payRecNo)
+                        if payRecValue == "P" :
+                            amountH = request.POST.getlist('Amount[]')[index]
+                            print("@18876-amountH",amountH,"Recid",payOrderID,"recNo",payRecNo)                            
+                            wamountH = request.POST.getlist('Wamount[]')[index]
+                            PrevDate = request.POST.getlist('recDatex[]')[index]
+                            PrevAmt = request.POST.getlist('recAmtx[]')[index]
+                            RemH = "Amount" , PrevAmt,"Date",PrevDate
+                            nAmtH =  request.POST.getlist('nAmt[]')[index]
+                            OsAmtH = request.POST.getlist('OsAmt[]')[index]
+                            OsAmtHf = float(OsAmtH)
+
+                            receiv = float(wamountH)+float(amountH)
+                            #print("@15969-OsAmtH",OsAmtHf,"wamountH",wamountH,"amountH",amountH,"receiv",receiv)
+                            ## CHnaged here comparing with NetAmount i/o osamt
+                            if ( float(receiv) > float(nAmtH)):
+                                print("@18888-OsAmtH",OsAmtH,"wamountH",wamountH,"amountH",amountH,"receiv",receiv,"nAmtH",nAmtH)
+                                
+                                #return render(request,'ifscexcelupload.html')
+                                return HttpResponse('CANNOT update Excess amount than Bill Amount')
+                            else :
+                                print("18893")
+                                
+                                details_form =  daily_receipts.objects.using(brch).filter(id=request.POST.getlist('dsrid1[]')[index]).update(
+                                    branch =brch,
+                                    #recNo = request.POST.getlist('recNo[]')[index],
+                                    #orderNo = request.POST.getlist('OrderNo[]')[index],
+                                    recdate = request.POST.getlist('Recdate[]')[index],
+                                    recType = request.POST.getlist('RecType[]')[index],
+                                    payRefNo = request.POST.getlist('PayRefNo[]')[index],
+                                    amount = request.POST.getlist('Amount[]')[index],                                    
                                     wamount = request.POST.getlist('Wamount[]')[index],
                                     remarks = request.POST.getlist('remarks[]')[index],
                                     updRemarks = RemH,

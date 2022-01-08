@@ -242,7 +242,7 @@ input[type=text] {
 											  	{% endfor %}
 										  	</select>-->
 										
-										<input type="number"  name="disc[]" class="width_percent workflowinputRadius disc" step="any" style="text-align:right;width:30px" id="Disc"value="0" >
+										<input type="number"  name="disc[]" class="width_percent workflowinputRadius" step="any" style="text-align:right;width:30px" id="Disc"value="0" >
 
 										<input type="hidden"  name="comm[]" value ="0" class="width_percent workflowinputRadius" step="any" style="text-align:right;width:30px" id="comm" readonly>
 										<input type="hidden"  name="remove[]" value ="New"  id="remove" >
@@ -347,30 +347,7 @@ $(document).ready(function(){
   $('#unitRate').first().val(data.product);
   $('#amount').first().val(data.amt);})})})	
 
-$(document).ready(function(){
-			$(".disc").first().select( function() {			$.ajax({
-			  type: "POST",
-			  data: $("form").serialize(),
-			  url: "/prodUnitRate/",
-			  success: document.body
-}).done(function(data) {
-	console.log($('#unitRate').first())
-				console.log($('#amount').first())
-  $('#unitRate').first().val(data.product);
-  $('#amount').first().val(data.amt);})})})	
 
-$(document).ready(function(){
-			$(".disc").first().change( function() {
-			$.ajax({
-			  type: "POST",
-			  data: $("form").serialize(),
-			  url: "/prodUnitRate/",
-			  success: document.body
-}).done(function(data) {
-	console.log($('#unitRate').first())
-				console.log($('#amount').first())
-  $('#unitRate').first().val(data.product);
-  $('#amount').first().val(data.amt);})})})	
 
 
 </script>

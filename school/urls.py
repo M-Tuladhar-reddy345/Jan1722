@@ -68,9 +68,13 @@ urlpatterns = [
     
     url(r'^manage_payments/$', views.manage_payments, name='manage_payments'),
     url(r'^modify_payments/$', views.modify_payments, name='modify_payments'),
+    url(r'^manage_pic_payments/$', views.manage_pic_payments, name='manage_pic_payments'),
     
+
     url(r'^updatePayments/$', views.updatePayments, name='updatePayments'),
     url(r'^modifyPayments/$', views.modifyPayments, name='modifyPayments'),
+    url(r'^updatePICPayments/$', views.updatePICPayments, name='updatePICPayments'),
+
     
     
     url(r'^updatePaymentsTotal/$',views.updatePaymentsTotal,name='updatePaymentsTotal'),

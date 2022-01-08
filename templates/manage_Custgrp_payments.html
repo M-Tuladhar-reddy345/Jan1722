@@ -94,7 +94,7 @@ input[type=date]{
 .scroll{
 	overflow-y: auto;
 	overflow-x: auto;
-	height: 400px;
+	height: 200px;
 	margin-top: 0px;
 	width: 100%;
 	white-space: nowrap;
@@ -114,9 +114,9 @@ input[type=date]{
 <div class="container">
 	
 		<div class="col-md-12 col-sm-12 col-xs-12">
-			<form  method="POST"  action="/modify_payments/" enctype="">
+			<form  method="POST"  action="/manage_Custgrp_payments/" enctype="">
 				{% csrf_token %}
-				<h2><b><center> Modify Updated Payments </center></b></h2>
+				<h2><b><center> Payment Entry by PIC </center></b></h2>
 				&emsp;
 
 				<!--<label for="fname"><b>Order Date </b></label>&ensp;
@@ -135,13 +135,13 @@ input[type=date]{
 										  
 										</td> -->
 
-				<td width="30%">	<label for="fname"><b>Customer </b></label>&ensp;
-											<select name="custCodeR" id="custCodeR"  style="width:350px">
+				<td width="20%">	<label for="fname"><b>Customer </b></label>&ensp;
+											<select name="custCodeR" id="custCodeR"  style="width:400px">
 				{% for ds in DailysalesC %}
 				
 												
 
-												<option value="{{ds.custcode}}"{% if ds.custcode == form.ds.value %} selected{% endif %} selected>{{ds.custName}}-{{ds.custcode}}-{{ds.recamt}}-{{ds.osamt}}</option>		
+												<option value="{{ds.custcode}}"{% if ds.custcode == form.ds.value %} selected{% endif %} selected>{{ds.custName}}-{{ds.custcode}}-{{ds.osamt}}</option>		
 														
 										  	
 				{% endfor %}
@@ -149,7 +149,7 @@ input[type=date]{
 					
 											    
 										  
-										</td>  
+										</td> 
 										<!--<td>
 										<label for="fname"><b>Order Date </b></label>&ensp;
 				<input type="date"  id="datePicker1" name="orderDateF" placeholder="Enter YYYY/MM/DD" required="" >&emsp;&emsp;
@@ -169,7 +169,7 @@ input[type=date]{
 
 
 			<!--Declaring new form to submit the matched data of Dok Entry and QC Emtry to Daily Data table.-->
-			<form  method="POST" id='formm'  action="/modify_payments/" enctype="">  
+			<form  method="POST" id='formm'  action="/manage_payments/" enctype="">  
 				{% csrf_token %}
 
 			<div class="col-md-12 col-sm-12 col-xs-12" id="table_notshow">
@@ -181,7 +181,7 @@ input[type=date]{
 							<thead class="tableHeadcolor">
 					            <tr>	
 					            		<th style="background-color: #69bc5f !important;">S.NO</th>	
-					            		<th style="background-color: #69bc5f !important;">#Order -RecNo - Date</th>
+					            		<th style="background-color: #69bc5f !important;">#Receipt</th>
 
 						                <th style="background-color: #69bc5f !important;">Receipt Date</th> 		<!--<th style="background-color: #69bc5f !important;">Order ID</th>	 -->        					     
 						               
@@ -191,12 +191,10 @@ input[type=date]{
 						                <th style="background-color: #69bc5f !important;">Rec Type</th>
 						                <th style="background-color: #69bc5f !important;">Payment Reference No</th>
 						                <th style="background-color: #69bc5f !important;">Receipt Amt</th>
-						                <th style="background-color: #69bc5f !important;">Diff Amt</th>
-						                <th style="background-color: #69bc5f !important;">
-						                Waiver</th>
+						                <th style="background-color: #69bc5f !important;">Waiver</th>
 						                
 						                <th style="background-color: #69bc5f !important;">U P D A T E</th> 
-						                 <th style="background-color: #69bc5f !important;">OrderNo-BillAmt-RecAmt-O/s  </th>
+						                <!-- <th style="background-color: #69bc5f !important;">Net-O/s Amount </th>-->
 						                <th style="background-color: #69bc5f !important;">Remarks</th>
 						                 <th style="background-color: #69bc5f !important;">Customer </th>
 						                
@@ -221,13 +219,14 @@ input[type=date]{
 					            		<!--<input type="hidden" value="{{dr.recdate |date:'Y-m-d'}}" name="sdate1[]" style="text-align:right">-->
 					            		
 						              	<td>
-											
-										<input type="button" name="recNo[]" value = "{{dr.orderNo}}-{{dr.recno}}-{{dr.recDate|date:'d/m/y'}}" step="any" id="recno" style="width:180px !important;" readonly>
-										<input type="hidden" id="recNo" name="recNo[]"  style="width:35px" value="{{dr.recno}}" >
-										
+										{% for getMaxrecID in getMaxrecID %}	
+										<!--<input type="button" name="recNo[]" value = "{{getMaxrecID.newRecNo}}-{{dr.orderNo}}-{{dr.date|date:'d/m/y'}}" step="any" id="recno" style="width:130px !important;" readonly>-->
+										<input type="button" name="recNo[]" value = "{{getMaxrecID.newRecNo}}" step="any" id="recno" style="width:60px !important;" readonly>
+										<input type="hidden" id="recNo" name="recNo[]"  style="width:35px" value="{{getMaxrecID.newRecNo}}" >
+										{% endfor %}	
 			  	 						</td>
 						               	<td>
-						               	<input type="date" id="datePicker1" name="Recdate[]" style="width:150px !important;" required="" value="{{dr.cdate}}">
+						               	<input type="date" id="datePicker1" name="Recdate[]" required="" value="{{dr.cdate}}">
 						              	
 						              	<!--<input type="hidden" id="datePicker1" name="Recdate[]"  style="width:35px" value="{{dr.cdate}}" >-->
 						              	</td>
@@ -240,7 +239,7 @@ input[type=date]{
 						              	</td>-->
 						               
 
-						             <input type="hidden" value="{{dr.recid}}" name="dsrid1[]" style="text-align:center"></td>	
+						             <input type="hidden" value="{{dr.id}}" name="dsrid1[]" style="text-align:center"></td>	
 										
 						              <td>
 						              	<select name="RecType[]" value="{{dr.recType}}" style="width:65px">
@@ -256,11 +255,9 @@ input[type=date]{
 										<td>
 										<input type="text"  name="PayRefNo[]" step="any" style="width:150px !important;" value="{{dr.payRefNo}}"></td>
 										
-										<td>&emsp;<input class="removee" type="number" name="Amount[]" step="any" id="amount" max = '{{dr.nAmt}}'value="{{dr.recAmt}}">
+										<td>&emsp;<input class="removee" type="number" name="Amount[]" step="any" id="amount" value="{{dr.OsAmt}}">
 										</td>
-										<td>&emsp;<input class="diff-{{forloop.counter}}" type="number" name="diff[]" step="any" id="diff" value="0" readonly>
-										</td>
-										<td>&emsp;<input type="number" name="Wamount[]" step="any" id="Wamount" value="0">
+										<td>&emsp;<input type="number" name="Wamount[]" step="any" id="Wamount" style="width:60px !important;" value="0">
 										</td>
 										<td >
 											<select class="removee" name="remove[]" value="{{dr.id}}" style="width:65px">
@@ -268,21 +265,17 @@ input[type=date]{
 											    <option value="P">P</option>
 										  	</select>
 										</td>
-										<td>
+										<!--<td>-->
 
-						              		<input type="button" id="OrderNo" name="OrderNo[]-amount[]"  style="width:180px !important;" value="{{dr.orderNo}}-{{dr.nAmt}}-{{dr.recAmt}}-{{dr.OsAmt}}" readonly>
+						              		<!--<input type="button" id="OrderNo" name="OrderNo[]-amount[]"  style="width:130px !important;" value="{{dr.nAmt}}-{{dr.OsAmt}}" readonly>-->
 
-						              		<input type="hidden" id="recAmtx" name="recAmtx[]"  style="width:35px" value="{{dr.recAmt}}" readonly>
-						              		<input type="hidden" id="recDatex" name="recDatex[]"  style="width:35px" value="{{dr.recDate}}" readonly>
 
-						              		<input type="hidden" id="nAmt" name="nAmt[]"  style="width:35px" value="{{dr.nAmt}}" readonly>
 
 						              		<input type="hidden" id="OsAmt" name="OsAmt[]"  style="width:35px" value="{{dr.OsAmt}}" readonly>	
 						              		
 						              		<input type="hidden" id="OrderNo" name="OrderNo[]"  style="width:35px" value="{{dr.orderNo}}" readonly>											
 										  
-										</td> 
-
+										<!--</td>--> 
 						              
 						                <td>
 						                	<input type="text" id="remarks"  name="remarks[]" step="any" style="width:200px !important;" ></td>
@@ -328,33 +321,17 @@ function myFunction1() {
 }
 </script>
 <script type="text/javascript">
-function Tot_addfunction(data) {
-	// console.log(data);
-  $('.total_sum').html('Received: ' + data['total_sum']);
-  for (var i = 0; i < data['diff'].length; i++) {
-    // console.log(data['diff'][i]);
-    $('.diff-'+data['diff'][i][0]).val(data['diff'][i][1]);
-    
-	}
-  // for (i in data['diff']){
-  // 	console.log(i[0]);
-  // 	$('.diff-'+i[0]).val(i[1]);
-  // }
-}
-
-$(document).ready(function(){
+	$(document).ready(function(){
 			$(".removee").change( function() {
 			console.log($("form").serialize());
 
 			$.ajax({
 			  type: "POST",
 			  data: $("form").serialize(),
-			  url: "/modifyPaymentsTotal/",
+			  url: "/updatePaymentsTotal/",
 			  success: document.body
 }).done(function(data) {
-	Tot_addfunction(data);})})})
-
-
+  $('.total_sum').html('Received : ' + data);})})})
 $(document).ready(function(){
 			$(".removee").select( function() {
 			console.log($("form").serialize());
@@ -362,13 +339,24 @@ $(document).ready(function(){
 			$.ajax({
 			  type: "POST",
 			  data: $("form").serialize(),
-			  url: "/modifyPaymentsTotal/",
+			  url: "/updatePaymentsTotal/",
 			  success: document.body
 }).done(function(data) {
-	Tot_addfunction(data);
-})})})	
+  $('.total_sum').html('Received: ' + data);})})})	
 </script>
+<script type="text/javascript">
+	$(document).ready(function(){
+			$(".removee").select( function() {
+			console.log($("form").serialize());
 
+			$.ajax({
+			  type: "POST",
+			  data: $("form").serialize(),
+			  url: "/updatePaymentsTotal/",
+			  success: document.body
+}).done(function(data) {
+  $('.total_sum').html('Received: ' + data);})})})
+</script>
 
 
 <script type="text/javascript">
@@ -379,20 +367,17 @@ $(document).ready(function(){
 			$.ajax({
 			  type: "POST",
 			  data: $("#formm").serialize(),
-			  url: "/modifyPayments/",
+			  url: "/updatePayments/",
 			  success: document.body
 				}).done(function(data) {
-					console.log(data)
-					if (data[0] == 'CANNOT update Excess amount than Bill Amount OrderNo' ) {
-						alert(data[0]+' '+ data[1]);
+					if (data == 'CANNOT update Excess amount than outstanding Amount') {
+						alert(data);
 					}
 					else{
 						alert('details saved')
 						location.reload();
 
 					}
-
-					
 					
 				})
 				})

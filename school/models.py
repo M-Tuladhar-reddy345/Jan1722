@@ -2719,6 +2719,32 @@ class daily_receipts(models.Model):
     def __str__(self):
         return str(self.orderNo)
 
+##daily_pic_receipts
+
+class daily_pic_receipts(models.Model):
+    branch =  models.CharField(max_length=255, null=True, blank=True)    
+    orderNo =  models.IntegerField(default=0)#daily_sales.orderNo
+    custcode = models.CharField(max_length=255, null=True, blank=True)
+    recNo =  models.IntegerField(default=0)
+    recdate = models.DateField(null=True,blank=True)
+    recType = models.CharField(max_length=15, null=True, blank=True)#CASH/CHEQUE/I-BANK
+    payRefNo  = models.CharField(max_length=100,null=True,blank=True)#key-in/Cash/Chqno/internetbankingrefcode    
+    amount  = models.FloatField(default=0.00,null=True, blank=True)    
+    remarks = models.CharField(max_length=100,null=True,blank=True)#key-in/Cash
+    remove = models.CharField(max_length=25,null=True,blank=True)
+    #updated_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True, related_name='updateR')
+    #created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True, related_name='createR')
+    updatetime = models.DateTimeField(default=timezone.now)
+    createtime = models.DateTimeField(default=timezone.now)
+    wamount  = models.FloatField(default=0.00,null=True, blank=True)
+    entryDate = models.DateField(null=True,blank=True)
+    entryUser = models.CharField(max_length=50, null=True, blank=True)
+    updateDate = models.DateField(null=True,blank=True)
+    updateUser = models.CharField(max_length=50, null=True, blank=True) 
+    updRemarks = models.CharField(max_length=100,null=True,blank=True) 
+
+    def __str__(self):
+        return str(self.recNo)
 
 #Customer-branch,custCode,custName,cust_type,zoneCode,saleExecCode,mobile,email,address,document,distance,active,remove,sourcedata
 class Customer(models.Model):
