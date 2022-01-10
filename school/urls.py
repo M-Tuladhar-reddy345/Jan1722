@@ -40,9 +40,12 @@ urlpatterns = [
     url(r'^CustomerwiseAllDetails/(?P<slug>.*)/(?P<slug1>.*)/(?P<slug2>.*)/(?P<slug3>.*)/(?P<slug4>.*)/$', views.excel_CustomerwiseAllDetails, name='excel_CustomerwiseAllDetails'),
     
     
+    
     url(r'^dailyReceipt/(?P<slug>.*)/(?P<slug1>.*)/(?P<slug2>.*)/(?P<slug3>.*)/(?P<slug4>.*)/$', views.excel_dailyReceipt, name='excel_dailyReceipt'),
     url(r'^dateWiseReceipt/(?P<slug>.*)/(?P<slug1>.*)/(?P<slug2>.*)/(?P<slug3>.*)/(?P<slug4>.*)/$', views.excel_dateWiseReceipt, name='excel_dateWiseReceipt'),
-
+    ##10-1-22
+    url(r'^dailyReceiptPIC/(?P<slug>.*)/(?P<slug1>.*)/(?P<slug2>.*)/(?P<slug3>.*)/(?P<slug4>.*)/$', views.excel_dailyReceiptPIC, name='excel_dailyReceiptPIC'),
+    
     
     url(r'^dailyIndentReport/$', views.dailyIndentReport, name='dailyIndentReport'),
     url(r'^custIndentReport/$', views.custIndentReport, name='custIndentReport'),
@@ -61,6 +64,7 @@ urlpatterns = [
     url(r'^DateWiseReceiptReport/$', views.DateWiseReceiptReport, name='DateWiseReceiptReport'),    
     url(r'^dailyReceiptReport/$', views.dailyReceiptReport, name='dailyReceiptReport'),
     url(r'^OSReportByCust/$', views.OSReportByCust, name='OSReportByCust'),
+    url(r'^dailyReceiptReportPIC/$', views.dailyReceiptReportPIC, name='dailyReceiptReportPIC'),
     
     url(r'^dailySalesSEReport/$', views.dailySalesSEReport, name='dailySalesSEReport'),
     

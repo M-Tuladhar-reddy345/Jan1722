@@ -2720,7 +2720,8 @@ class daily_receipts(models.Model):
         return str(self.orderNo)
 
 ##daily_pic_receipts
-
+#branch,orderNo,custcode,recNo,recdate,recType,payRefNo,amount,remarks,remove,
+#updatetime,createtime,wamount,entryDate,entryUser,updateDate,updateUser,updRemarks,billAmt,PendAmt
 class daily_pic_receipts(models.Model):
     branch =  models.CharField(max_length=255, null=True, blank=True)    
     orderNo =  models.IntegerField(default=0)#daily_sales.orderNo
@@ -2741,7 +2742,9 @@ class daily_pic_receipts(models.Model):
     entryUser = models.CharField(max_length=50, null=True, blank=True)
     updateDate = models.DateField(null=True,blank=True)
     updateUser = models.CharField(max_length=50, null=True, blank=True) 
-    updRemarks = models.CharField(max_length=100,null=True,blank=True) 
+    updRemarks = models.CharField(max_length=100,null=True,blank=True)
+    #billAmt  = models.FloatField(default=0.00,null=True, blank=True)
+    #pendAmt  = models.FloatField(default=0.00,null=True, blank=True) 
 
     def __str__(self):
         return str(self.recNo)

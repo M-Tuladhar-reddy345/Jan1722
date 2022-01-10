@@ -114,9 +114,9 @@ input[type=date]{
 <div class="container">
 	
 		<div class="col-md-12 col-sm-12 col-xs-12">
-			<form  method="POST"  action="/manage_Custgrp_payments/" enctype="">
+			<form  method="POST"  action="/manage_pic_payments/" enctype="">
 				{% csrf_token %}
-				<h2><b><center> Payment Entry by PIC </center></b></h2>
+				<h2><b><center> ..Payment(s) Entry by PIC.. </center></b></h2>
 				&emsp;
 
 				<!--<label for="fname"><b>Order Date </b></label>&ensp;
@@ -169,7 +169,7 @@ input[type=date]{
 
 
 			<!--Declaring new form to submit the matched data of Dok Entry and QC Emtry to Daily Data table.-->
-			<form  method="POST" id='formm'  action="/manage_payments/" enctype="">  
+			<form  method="POST" id='formm'  action="/manage_pic_payments/" enctype="">  
 				{% csrf_token %}
 
 			<div class="col-md-12 col-sm-12 col-xs-12" id="table_notshow">
@@ -183,7 +183,8 @@ input[type=date]{
 					            		<th style="background-color: #69bc5f !important;">S.NO</th>	
 					            		<th style="background-color: #69bc5f !important;">#Receipt</th>
 
-						                <th style="background-color: #69bc5f !important;">Receipt Date</th> 		<!--<th style="background-color: #69bc5f !important;">Order ID</th>	 -->        					     
+						                <th style="background-color: #69bc5f !important;">Receipt Date</th> 		
+						                <!--<th style="background-color: #69bc5f !important;">Order ID</th>	 -->        					     
 						               
 
 						               
@@ -367,7 +368,7 @@ $(document).ready(function(){
 			$.ajax({
 			  type: "POST",
 			  data: $("#formm").serialize(),
-			  url: "/updatePayments/",
+			  url: "/updatePICPayments/",
 			  success: document.body
 				}).done(function(data) {
 					if (data == 'CANNOT update Excess amount than outstanding Amount') {
@@ -441,7 +442,7 @@ $(document).ready(function(){
         total.value = total_amount;
         amount.value = rate;
     }
-</script>-->
+</script>
 <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){

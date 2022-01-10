@@ -8359,6 +8359,206 @@ def DateWiseReceiptReport(request):
         return render(request,'DateWiseReceiptReport.html',locals())
 ## End DateWiseReceiptReport
 
+## 10Jan22
+
+### In the midst of changes
+def dailyReceiptReportPIC(request):
+    try:
+        brch = request.user.extendeduser.branch
+        if request.user.extendeduser.branch == brch:
+            #DailySales = daily_sales.objects.using(brch).filter(amount=0.00).distinct().order_by(('orderNo'))
+            DailySales = daily_sales.objects.using(brch).all().distinct().order_by(('orderNo'))
+            
+            CustSales = "select distinct C.id,C.custCode cCode,C.custName cName from %s.school_saleorder D, %s.school_customer C where  D.custcode=C.custCode  order by C.custName "%(str(brch),str(brch))  
+            #print('@6531-custSales',CustSales)
+            cs =daily_sales.objects.using(brch).raw(CustSales)
+
+            for i in cs:
+                today = date.today()
+                #print("@6535",i.cCode)
+
+            today = date.today()
+            t_m = datetime.datetime.now().month
+            start_of_m = today.replace(day =1, month=t_m)
+            end_of_m = start_of_m + relativedelta(months=1) - timedelta(days=1)
+            # return HttpResponse(end_of_m)
+            if request.session.has_key('name'):
+                if request.method == "POST":
+                    datefrom = request.POST["datefrom"]
+                    dateto = request.POST["dateto"]
+                    orderNo =  "all"#request.POST["orderNo"]
+                    #saleExec = request.POST["salesexec"]
+                    selecting = request.POST["Issued_to"]
+                    #print('@6319',selecting)
+                   
+                    custcode = request.POST["custcode"]
+                    
+                    datefrom1 =datetime.datetime.strptime(datefrom, '%Y-%m-%d').strftime('%d-%m-%Y')
+                    #print(datefrom)
+                    dateto1 = datetime.datetime.strptime(dateto, '%Y-%m-%d').strftime('%d-%m-%Y')   
+                    aa = "To"                    
+                    cursor = connection.cursor()
+
+                    
+
+                    #print("@6343",custcode)
+                    #print("@6344",orderNo)
+
+
+
+                    #getSaleData = "select distinct custCode,custName,email,mobile from  %s.school_customer where custcode= '%s'  "%(str(brch),str(custcode))  
+                    #dc =Customer.objects.using(brch).raw(getSaleData)
+                    if custcode == 'all' :
+                        custNameP="ALL"
+                        #dc = Customer.objects.using(brch).filter().distinct()
+                    else :
+                        dc = Customer.objects.using(brch).filter(custCode = custcode).distinct()
+                        for i in dc:
+                            custNameP = i.custName   
+
+                   
+
+                    #if orderNo == 'all' or custcode == 'all'  : #or  saleExec == 'all':
+                        #print('@7989 selecting',selecting,'custcode',custcode,'orderNo',orderNo,'salesExec',saleExec)            
+                        #custcode = "Vip001"
+                    if selecting == 'recdate' :
+                        if custcode == 'all' :
+                            if orderNo == 'all' :     
+                                #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, COALESCE(ds.OSAmount,0) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(datefrom),str(dateto))  
+                                print('@8187 - recdate ALL cust')
+                                #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, COALESCE(ds.OSAmount,0) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(datefrom),str(dateto))  
+                                getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,dr.recdate date,ds.orderNo,round(sum(ds.comm),2) sComm,round(sum(ds.amount),2) sAmt ,round(sum(ds.netAmount),2) sNAmt,sum(COALESCE(ds.RecAmount,0)) sRAmt,sum(COALESCE(ds.WAmount,0)) sWAmt, sum(COALESCE(ds.OSAmount,0)) sOSAmt ,ds.date from %s.school_saleorder ds, %s.school_daily_receipts dr, %s.school_customer CM Where ds.orderNo = dr.orderNo and CM.custCode = ds.custcode and dr.recdate between '%s' and '%s' group by ds.custcode order by dr.custcode,dr.recdate,dr.recNo "%(str(brch),str(brch),str(brch),str(datefrom),str(dateto))  
+                            else : 
+                                getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, COALESCE(ds.OSAmount,0) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.orderNo = '%s' and dr.recDate between '%s' and '%s' order by dr.recdate,dr.recNo,dr.custcode "%(str(brch),str(brch),str(brch),str(orderNo),str(datefrom),str(dateto))  
+                        else :
+                            if orderNo == 'all' :
+                                print('@8194 - recdate Selected cust')
+                                getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,dr.recdate date,ds.orderNo,round(sum(ds.comm),2) sComm,round(sum(ds.amount),2) sAmt ,round(sum(ds.netAmount),2) sNAmt,sum(COALESCE(ds.RecAmount,0)) sRAmt,sum(COALESCE(ds.WAmount,0)) sWAmt, sum(COALESCE(ds.OSAmount,0)) sOSAmt ,ds.date from %s.school_saleorder ds, %s.school_daily_receipts dr, %s.school_customer CM Where ds.orderNo = dr.orderNo and CM.custCode = ds.custcode and ds.custCode = '%s' and dr.recdate between '%s' and '%s' group by ds.custcode order by dr.recdate,dr.recNo,dr.custcode  "%(str(brch),str(brch),str(brch),str(custcode),str(datefrom),str(dateto))  
+                             
+                                #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and ds.custCode = '%s' and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(custcode),str(datefrom),str(dateto))  
+                            else : 
+                                getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.orderNo = '%s' and ds.custCode = '%s' and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(orderNo),str(custcode),str(datefrom),str(dateto))  
+                           
+                    else : #by OrderDate
+                        if custcode == 'all' :
+                            if orderNo == 'all' :     
+                                #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and ds.date between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(datefrom),str(dateto))  
+                                 print('@8010 - OrderDate ALL cust')
+                                 getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,round(sum(ds.comm),2) sComm,round(sum(ds.amount),2) sAmt ,round(sum(ds.netAmount),2) sNAmt,sum(COALESCE(ds.RecAmount,0)) sRAmt,sum(COALESCE(ds.WAmount,0)) sWAmt, sum(COALESCE(ds.OSAmount,0)) sOSAmt ,ds.date from %s.school_saleorder ds, %s.school_customer CM Where CM.custCode = ds.custcode and ds.date between '%s' and '%s' group by ds.custcode "%(str(brch),str(brch),str(datefrom),str(dateto))  
+                            else : 
+                                #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.orderNo = '%s' and ds.date between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(orderNo),str(datefrom),str(dateto))  
+                                getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,ds.date from %s.school_saleorder ds, %s.school_customer CM Where CM.custCode = ds.custcode and ds.orderNo = '%s' and ds.date between '%s' and '%s' group by ds.custcode "%(str(brch),str(brch),str(orderNo),str(datefrom),str(dateto))  
+                        else :  
+                            if orderNo == 'all' : 
+                                #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and ds.custCode = '%s' and ds.date between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(custcode),str(datefrom),str(dateto))  
+                                print('@8018 - OrderDate Selected cust')
+                                getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,round(sum(ds.comm),2) sComm,round(sum(ds.amount),2) sAmt ,round(sum(ds.netAmount),2) sNAmt,sum(COALESCE(ds.RecAmount,0)) sRAmt,sum(COALESCE(ds.WAmount,0)) sWAmt, sum(COALESCE(ds.OSAmount,0)) sOSAmt ,ds.date from %s.school_saleorder ds, %s.school_customer CM Where CM.custCode = ds.custcode and ds.custCode = '%s' and ds.date between '%s' and '%s' group by ds.custcode "%(str(brch),str(brch),str(custcode),str(datefrom),str(dateto))  
+                            
+                                #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,ds.date from %s.school_saleorder ds, %s.school_customer CM Where CM.custCode = ds.custcode and ds.custCode = '%s' and ds.date between '%s' and '%s' group by ds.custcode "%(str(brch),str(brch),str(custcode),str(datefrom),str(dateto))  
+                            else : 
+                                #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.orderNo = '%s' and ds.custCode = '%s' and ds.date between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(orderNo),str(custcode),str(datefrom),str(dateto))  
+                                getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,ds.date from %s.school_saleorder ds, %s.school_customer CM Where CM.custCode = ds.custcode and ds.custCode = '%s' and ds.orderNo = '%s' and ds.date between '%s' and '%s' group by ds.custcode "%(str(brch),str(brch),str(custcode),str(orderNo),str(datefrom),str(dateto))      
+                        
+                    print('@8023',getSaleData2)
+                    ds2 = saleorder.objects.using(brch).raw(getSaleData2)# filter(date__range=[datefrom, dateto]).distinct()
+                    #getSaleGrpData = "select distinct  ds.id,sum(ds.comm) sComm,sum(ds.amount) sAmount,sum(ds.netAmount) sNetAmount,sum(COALESCE(ds.RecAmount,0)) sRecAmount, sum(COALESCE(ds.WAmount,0)) sWAmount, sum(COALESCE(ds.OSAmount,0)) sOsAmount  from %s.school_saleorder ds, %s.school_daily_receipts dr Where  dr.orderno = ds.orderno and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(datefrom),str(dateto))   
+                    #print('@8023-getSaleGrpData', getSaleGrpData)
+                    #soGrp = saleorder.objects.using(brch).raw(getSaleGrpData)
+                       
+                    # Start Gross Amount
+                    total_listAmount = []
+                    total_Amountsum_detail = 0
+                    if selecting == 'orderdate' :
+                        if custcode == 'all' :
+                            total_Amountall = saleorder.objects.using(brch).filter(date__range=[datefrom, dateto]).distinct()
+                        else :
+                            total_Amountall = saleorder.objects.using(brch).filter(date__range=[datefrom, dateto],custcode = custcode).distinct()
+                    else :
+                        if custcode == 'all' :
+                            total_Amountall = daily_receipts.objects.using(brch).filter(recdate__range=[datefrom, dateto]).distinct()
+                        else :
+                            print("It works from now as DR also tagged to custcode")
+                            total_Amountall = daily_receipts.objects.using(brch).filter(recdate__range=[datefrom, dateto],custcode = custcode).distinct()
+                    
+                    #total_Amountall = saleorder.objects.using(brch).filter(date__range=[datefrom, dateto]).distinct()
+                    for i in total_Amountall:
+                        total_listAmount.append(i.amount)
+                        total_Amountsum_detail = round(sum(total_listAmount),2)
+                        # END Gross Amount
+                        #  # Start Net Amount
+                    total_listNetAmt = []
+                    total_NetAmtsum_detail = 0
+                    if custcode == 'all' :
+                        total_NetAmtall = saleorder.objects.using(brch).filter(date__range=[datefrom, dateto]).distinct()
+                    else :
+                        total_NetAmtall = saleorder.objects.using(brch).filter(date__range=[datefrom, dateto],custcode = custcode).distinct()
+                    for i in total_NetAmtall:
+                        total_listNetAmt.append(i.netAmount)
+                        total_NetAmtsum_detail = round(sum(total_listNetAmt),2)
+                        # # END Net Amount 
+
+                         # Start Net Amount
+                    total_listCommAmt = []
+                    total_CommAmtsum_detail = 0
+                    if custcode == 'all' :
+                        total_CommAmtall = saleorder.objects.using(brch).filter(date__range=[datefrom, dateto]).distinct()
+                    else :
+                        total_CommAmtall = saleorder.objects.using(brch).filter(date__range=[datefrom, dateto],custcode = custcode).distinct()    
+                    for i in total_CommAmtall:
+                        total_listCommAmt.append(i.comm)
+                        total_CommAmtsum_detail = round(sum(total_listCommAmt),2)
+                        # # END Net Amount 
+
+                         # Start Rec Amount
+                    total_listRecAmt = []
+                    total_CommRecSum_detail = 0
+                    if custcode == 'all' :
+                        total_CommRecAmtall =saleorder.objects.using(brch).filter(date__range=[datefrom, dateto]).distinct()
+                    else :
+                        total_CommRecAmtall =saleorder.objects.using(brch).filter(date__range=[datefrom, dateto],custcode = custcode).distinct()
+                    
+                    for i in total_CommRecAmtall:
+                        total_listRecAmt.append(i.RecAmount)
+                        total_CommRecSum_detail = round(sum(total_listRecAmt),2)
+                        # # END Rec Amount 
+                    # Start Waiver Amount
+                    total_listWAmt = []
+                    total_CommWSum_detail = 0
+                    if custcode == 'all' :
+                        total_CommWAmtall =saleorder.objects.using(brch).filter(date__range=[datefrom, dateto]).distinct()
+                    else :
+                        total_CommWAmtall =saleorder.objects.using(brch).filter(date__range=[datefrom, dateto],custcode = custcode).distinct()
+                    for i in total_CommWAmtall:
+                        total_listWAmt.append(i.WAmount)
+                        total_CommWSum_detail = round(sum(total_listWAmt),2)
+                        # # END Waiver Amount     
+
+                         # Start Os Amount
+                    total_listOsAmt = []
+                    total_CommOsSum_detail = 0
+                    if custcode == 'all' :
+                        total_CommOsAmtall =saleorder.objects.using(brch).filter(date__range=[datefrom, dateto]).distinct()
+                    else :
+                        total_CommOsAmtall =saleorder.objects.using(brch).filter(date__range=[datefrom, dateto],custcode = custcode).distinct()
+                    for i in total_CommOsAmtall:
+                        total_listOsAmt.append(i.OSAmount)
+                        total_CommOsSum_detail = round(sum(total_listOsAmt),2)
+                        # # END Os Amount 
+
+                    print(ds2)
+                return render(request,'dailyReceiptReportPIC.html',locals())
+            else:
+                return render(request,'index.html',locals())
+        else:
+            return render(request,'index.html',locals())
+
+    except Exception as err:
+
+        messages.error(request,err)
+        return render(request,'dailyReceiptReportPIC.html',locals())
+
+## end 10Jan22
+
 ### In the midst of changes
 def dailyReceiptReport(request):
     try:
@@ -8907,7 +9107,160 @@ def excel_AllReceipt(request,slug,slug1,slug2,slug3,slug4):
         ws.write(row_num, col_num, columns1[col_num], font_style)
     wb.save(response)
     return response
+##
+##excel_dailyReceiptPIC
+def excel_dailyReceiptPIC(request,slug,slug1,slug2,slug3,slug4):
+    print('@9803 - slug',slug,'slug1',slug1,'slug2',slug2,'slug3',slug3,'slug4',slug4)
 
+
+    today = date.today()
+    start_of_yr = today.replace(day=1, month=4)
+    end_of_yr = start_of_yr + relativedelta(months=11, days=31) - timedelta(days=1)
+    #board = Daily_data.objects.filter( date_gte=start_of_yr, date_lte=end_of_yr)
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="DailyReceiptbyPIC.xls"'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('dailyReceiptReportPIC', cell_overwrite_ok=True)
+    row_num = 0
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+    font_date = xlwt.XFStyle()
+    font_date.num_format_str = 'D-MM-YYYY'
+    
+    columns = ['Customer',  'Date','Amount', 'Waived','Payment Type','Payment Ref No','Receipt No','Remarks','Updated By','Updated Date']    
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+    font_style = xlwt.XFStyle()
+    # x = datetime.strptime(date, "%d/%m/%Y")
+    brch = request.user.extendeduser.branch
+    if request.user.extendeduser.branch == brch:
+
+        
+        if slug3 == 'all' :
+            custNameP="ALL"
+            rows = Customer.objects.using(brch).filter().distinct()
+        else :
+            rows = Customer.objects.using(brch).filter(custCode = slug3).distinct()
+            for i in rows:
+                custNameP = i.custName   
+
+       
+
+        if slug4 == 'recdate' :
+                   
+            if slug3 == 'all' :
+                if slug2 == 'all' :     
+                    #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, COALESCE(ds.OSAmount,0) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(datefrom),str(dateto))  
+                    #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, COALESCE(ds.OSAmount,0) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(slug),str(slug1))  
+                    print('@ 9155 at right option udner excel_dailyReceiptPIC')
+                    getSaleData2 = "select distinct  pr.id,pr.branch,pr.custcode,CM.custName custName,pr.recdate rDate,COALESCE(pr.amount,0) rAmt,COALESCE(pr.wamount,0) wAmt ,pr.rectype payType,pr.payrefno PayRefNo,pr.recno RecNo,remarks Remarks,entrydate updDate,entryuser updUser from %s.school_daily_pic_receipts pr,  %s.school_customer CM where CM.custCode = pr.custcode and pr.recDate between '%s' and '%s' "%(str(brch),str(brch),str(slug),str(slug1))
+                else : 
+                    getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, COALESCE(ds.OSAmount,0) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.orderNo = '%s' and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(slug2),str(slug),str(slug1))  
+            else :
+                if slug2 == 'all' : 
+                    getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and ds.custCode = '%s' and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(slug3),str(slug),str(slug1))  
+                else : 
+                    getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.orderNo = '%s' and ds.custCode = '%s' and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(slug2),str(slug3),str(slug),str(slug1))  
+               
+        else : #by OrderDate
+            if slug3 == 'all' :
+                if slug2 == 'all' :     
+                    #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and ds.date between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(slug),str(dateto))  
+                     #print('@8302 OrderDate All Cust')
+                     getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,round(sum(ds.comm),2) sComm,sum(ds.amount) sAmt,sum(ds.netAmount) sNAmt,sum(COALESCE(ds.RecAmount,0)) sRAmt, sum(COALESCE(ds.OSAmount,0)) sOSAmt , sum(COALESCE(ds.WAmount,0)) sWAmt , ds.date from %s.school_saleorder ds, %s.school_customer CM Where CM.custCode = ds.custcode and ds.date between '%s' and '%s' group by ds.custcode "%(str(brch),str(brch),str(slug),str(slug1))  
+                else : 
+                    #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.orderNo = '%s' and ds.date between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(orderNo),str(slug),str(dateto))  
+                    getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,ds.date from %s.school_saleorder ds, %s.school_customer CM Where CM.custCode = ds.custcode and ds.orderNo = '%s' and ds.date between '%s' and '%s' group by ds.custcode "%(str(brch),str(brch),str(slug2),str(slug),str(slug1))  
+            else :  
+                if slug2 == 'all' : 
+                    #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and ds.custCode = '%s' and ds.date between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(custcode),str(datefrom),str(dateto))  
+                    #print('@8338 OrderDate Selected Cust')
+                    getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,round(sum(ds.comm),2) sComm,sum(ds.amount) sAmt,sum(ds.netAmount) sNAmt ,sum(COALESCE(ds.RecAmount,0)) sRAmt, sum(COALESCE(ds.OSAmount,0)) sOSAmt , sum(COALESCE(ds.WAmount,0)) sWAmt , ds.date from %s.school_saleorder ds, %s.school_customer CM Where CM.custCode = ds.custcode and ds.custCode = '%s' and ds.date between '%s' and '%s' group by ds.custcode "%(str(brch),str(brch),str(slug3),str(slug),str(slug1))  
+                
+                    #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,ds.date from %s.school_saleorder ds, %s.school_customer CM Where CM.custCode = ds.custcode and ds.custCode = '%s' and ds.date between '%s' and '%s' group by ds.custcode "%(str(brch),str(brch),str(slug3),str(slug),str(slug1))  
+                else : 
+                    #getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,dr.recdate from %s.school_saleorder ds, %s.school_daily_receipts dr,  %s.school_customer CM Where CM.custCode = ds.custcode and dr.orderno = ds.orderno and dr.orderNo = '%s' and ds.custCode = '%s' and ds.date between '%s' and '%s'  "%(str(brch),str(brch),str(brch),str(orderNo),str(custcode),str(datefrom),str(dateto))  
+                    getSaleData2 = "select distinct  ds.id,ds.branch,ds.custcode,CM.custName,ds.date,ds.orderNo,ds.comm,ds.amount,ds.netAmount,COALESCE(ds.RecAmount,0) RecAmount, (ds.netAmount-COALESCE(ds.RecAmount,0)) osAmount ,ds.date from %s.school_saleorder ds, %s.school_customer CM Where CM.custCode = ds.custcode and ds.custCode = '%s' and ds.orderNo = '%s' and ds.date between '%s' and '%s' group by ds.custcode "%(str(brch),str(brch),str(slug3),str(slug2),str(slug),str(slug1))      
+            
+        getSaleData2 = "select distinct  pr.id,pr.branch,pr.custcode,CM.custName custName,pr.recdate rDate,COALESCE(pr.amount,0) rAmt,COALESCE(pr.wamount,0) wAmt ,pr.rectype payType,pr.payrefno PayRefNo,pr.recno RecNo,remarks Remarks,entrydate updDate,entryuser updUser from %s.school_daily_pic_receipts pr,  %s.school_customer CM where CM.custCode = pr.custcode and pr.recDate between '%s' and '%s' "%(str(brch),str(brch),str(slug),str(slug1))
+        print('...pay upd by pic@9184',getSaleData2)
+        #getSaleData2 = "select distinct  pr.id,pr.branch,pr.custcode,CM.custName custName,pr.recdate rDate,COALESCE(pr.amount,0) rAmt,COALESCE(pr.wamount,0) wAmt ,pr.rectype payType,pr.payrefno PayRefNo,pr.recno RecNo,remarks Remarks,entrydate updDate,entryuser updUser from %s.school_daily_pic_receipts pr,  %s.school_customer CM where CM.custCode = pr.custcode and pr.recDate between '%s' and '%s' "%(str(brch),str(brch),str(slug),str(slug1))
+        rows1 =daily_pic_receipts.objects.using(brch).raw(getSaleData2)# filter(date__range=[datefrom, dateto]).distinct()
+        #getSaleGrpData = "select distinct  ds.id,sum(ds.comm) sComm,sum(ds.amount) sAmount,sum(ds.netAmount) sNetAmount,sum(COALESCE(ds.RecAmount,0)) sRecAmount, sum(COALESCE(ds.WAmount,0)) sWAmount, sum(COALESCE(ds.OSAmount,0)) sOsAmount  from %s.school_saleorder ds, %s.school_daily_receipts dr Where  dr.orderno = ds.orderno and dr.recDate between '%s' and '%s'  "%(str(brch),str(brch),str(datefrom),str(dateto))   
+        #print('@8023-getSaleGrpData', getSaleGrpData)
+        #soGrp = saleorder.objects.using(brch).raw(getSaleGrpData)
+           
+        # Start Receipt Amount by PIC
+        total_listAmount = []
+        total_Amountsum_detail = 0
+        if slug4 == 'recdate' :
+            if slug3 == 'all' :
+                total_Amountall = saleorder.objects.using(brch).filter(date__range=[slug, slug1]).distinct()
+            else :
+                total_Amountall = saleorder.objects.using(brch).filter(date__range=[slug, slug1],custcode = slug3).distinct()
+        else :
+            if slug3 == 'all' :
+                total_Amountall = daily_pic_receipts.objects.using(brch).filter(recdate__range=[slug, slug1]).distinct()
+            else :
+                print("It will work from now on")
+                total_Amountall = daily_pic_receipts.objects.using(brch).filter(recdate__range=[slug, slug1],custcode = slug3).distinct()
+        
+        #total_Amountall = saleorder.objects.using(brch).filter(date__range=[slug, slug1]).distinct()
+        for i in total_Amountall:
+            total_listAmount.append(i.amount)
+            total_Amountsum_detail = round(sum(total_listAmount),2)
+            # END Receipt Amount by PIC
+            
+        # Start Receipt Amount waiver by PIC
+        #total_WAmount = []
+        total_listWAmount = []
+        total_WAmountsum_detail = 0
+        if slug4 == 'recdate' :
+            if slug3 == 'all' :
+                total_WAmountall = saleorder.objects.using(brch).filter(date__range=[slug, slug1]).distinct()
+            else :
+                total_WAmountall = saleorder.objects.using(brch).filter(date__range=[slug, slug1],custcode = slug3).distinct()
+        else :
+            if slug3 == 'all' :
+                total_WAmountall = daily_pic_receipts.objects.using(brch).filter(recdate__range=[slug, slug1]).distinct()
+            else :
+                print("It will work from now on")
+                total_WAmountall = daily_pic_receipts.objects.using(brch).filter(recdate__range=[slug, slug1],custcode = slug3).distinct()
+        
+        #total_Amountall = saleorder.objects.using(brch).filter(date__range=[slug, slug1]).distinct()
+        for i in total_WAmountall:
+            total_listWAmount.append(i.wamount)
+            total_WAmountsum_detail = round(sum(total_listWAmount),2)
+            # END Receipt Amount waiver by PIC
+        
+    #columns = ['Customer',  'Date','Amount', 'Waived','Payment Type','Payment Ref No','Receipt No','Remarks','Updated By','Updated Date']    
+                  #custName,rDate,rAmt,wAmt,payType,PayRefNo,RecNo,Remarks,updUser,updDate
+        
+    #print(rows_end)
+    row_num = row_num + 1
+    for r in rows1:
+        ws.write(row_num, 0, r.custName, font_style)
+        ws.write(row_num, 1, r.rDate, font_date)
+        ws.write(row_num, 2, r.rAmt, font_style)
+        ws.write(row_num, 3, r.wAmt, font_style)
+        ws.write(row_num, 4, r.payType, font_style)
+        ws.write(row_num, 5, r.PayRefNo, font_style)
+        ws.write(row_num, 6, r.RecNo, font_style)
+        ws.write(row_num, 7, r.Remarks, font_style)
+        ws.write(row_num, 8, r.updUser, font_style)
+        ws.write(row_num, 9, r.updDate, font_date)
+        
+        row_num = row_num + 1
+    columns1 = ['Total','', total_Amountsum_detail,total_WAmountsum_detail,'','','','','','']
+    rows_end = len(rows1)      
+
+    
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns1[col_num], font_style)
+    wb.save(response)
+    return response
+
+##
 
 def excel_dailyReceipt(request,slug,slug1,slug2,slug3,slug4):
     print('@9803 - slug',slug,'slug1',slug1,'slug2',slug2,'slug3',slug3,'slug4',slug4)
@@ -18543,7 +18896,7 @@ def manage_pic_payments(request):
                 getSalesData = "select distinct S.id, C.custCode custcode, C.custName, sum(OSAmount) osamt from  %s.school_saleorder S,  %s.school_customer C where C.custCode = S.custcode and netAmount > 0 and osAmount > 0 group by C.custCode order by C.custName "%(str(brch),str(brch)) 
                 #getSalesData = "select distinct d.id, d.custCode custcode, c.custName , sum(d.netAmount) nAmt,sum(d.netAmount)-sum(R.Amount) OsAmt, sum(R.Amount) recAmount from  %s.school_daily_sales d left join %s.school_daily_receipts R on R.orderno = d.orderno and netAmount > 0 and (RecAmount = 0 or RecAmount < netAmount  ) left join  %s.school_customer c on c.custCode = d.custCode group by c.custname,d.orderno order by c.custname,d.orderno "%(str(brch),str(brch),str(brch)) 
                 #getSalesDataNOK = "select distinct d.id, d.custCode custcode, c.custName custName, sum(d.netAmount-RecAmount) OsAmt from %s.school_daily_sales d , %s.school_customer c  where c.custcode = d.custCode and netAmount > 0 and (RecAmount = 0 or RecAmount < netAmount  ) group by custName order by custName"%(str(brch),str(brch))                
-                #print('@8821',getSalesData)
+                print('@8821',getSalesData)
                 DailysalesC = saleorder.objects.using(brch).raw(getSalesData)
 
                 #Dailysales = daily_sales.objects.using(brch).filter(RecAmount = 0 and RecAmount < netAmount).distinct()
@@ -18578,7 +18931,7 @@ def manage_pic_payments(request):
                     #getOsAmt = " select distinct d.id ssid, d.id,  ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt , sum(OSAmount) sOSAmount from  %s.school_saleorder d where (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount) and d.date >='2021-11-01' group by d.custcode  " %(str(brch),str(customer1)) 
                     getOsAmt = " select distinct d.id ssid, d.id,  ( sum(d.netAmount) - (sum(COALESCE(d.recAmount,0))+sum(COALESCE(d.WAmount,0)))  ) OsAmt , sum(OSAmount) sOSAmount from  %s.school_saleorder d where (d.custCode = '%s'  ) and (COALESCE(d.recamount,0) < d.netAmount)  group by d.custcode  " %(str(brch),str(customer1)) 
 
-                    #print('@8779',getSaleOrderwiseData)
+                    print('@8779',getSaleOrderwiseData)
                     
                     os2 = saleorder.objects.using(brch).raw(getOsAmt) 
                    
@@ -19031,16 +19384,15 @@ def updatePICPayments(request):
                     #recdateH = request.POST["date_t2"]
                     #recdateH ="2021-10-28"
                     
-                    #print('@8803',request.POST['orderdateT']  )
+                    #print('@8803',request.POST['orderdateT'])
                     
-                    custCodeH = request.POST["custCodeR"] 
+                    custCodeH = request.POST["custCodeR"]
 
-                    #print('@8802',request.POST['custCodeR'],   )
+                    #print('@8802',request.POST['custCodeR'],)
 
                     Dailysales4R = daily_sales.objects.using(brch).filter(custcode=request.POST["custCodeR"]).distinct()
                     
-                    for index,j in enumerate(request.POST.getlist('OrderNo[]')):
-                        
+                    for index,j in enumerate(request.POST.getlist('OrderNo[]')):                        
                         payRecValue = request.POST.getlist('remove[]')[index]
                         payOrderID = request.POST.getlist('dsrid1[]')[index]
                         #print("@8865-payRecValue",payRecValue,"orderID",payOrderID)
@@ -19051,16 +19403,14 @@ def updatePICPayments(request):
                             OsAmtHf = float(OsAmtH)
                             receiv = float(wamountH)+float(amountH)
                             #print("@15969-OsAmtH",OsAmtHf,"wamountH",wamountH,"amountH",amountH,"receiv",receiv)
-                            if ( float(receiv) > float(OsAmtH)):
-                                #print("@15971-OsAmtH",OsAmtH,"wamountH",wamountH,"amountH",amountH,"receiv",receiv)
-                                
+                            if ( float(receiv) > float(OsAmtH) ) :
+                                #print("@15971-OsAmtH",OsAmtH,"wamountH",wamountH,"amountH",amountH,"receiv",receiv)                                
                                 #return render(request,'ifscexcelupload.html')
                                 return HttpResponse('CANNOT update Excess amount than outstanding Amount')
                             else :
-                                print("16011")
-                                
-                                details_form =  daily_receipts.objects.using(brch).create(
-                                    branch =brch,
+                                print("19060")                                
+                                details_form =  daily_pic_receipts.objects.using(brch).create(
+                                    branch = brch,
                                     recNo = request.POST.getlist('recNo[]')[index],
                                     orderNo = request.POST.getlist('OrderNo[]')[index],
                                     recdate = request.POST.getlist('Recdate[]')[index],
@@ -19072,9 +19422,10 @@ def updatePICPayments(request):
                                     entryDate = date.today(),
                                     entryUser = request.user.username,
                                     custcode = custCodeH,
-                                #created_by=request.user,            
+                                    #created_by=request.user,            
                                     )
-                        
+                        # branch,orderNo,custcode,recNo,recdate,recType,payRefNo,amount,remarks,remove,
+                        # updatetime,createtime,wamount,entryDate,entryUser,updateDate,updateUser,updRemarks
 
                     #for index,j in enumerate(request.POST.getlist('OrderNo[]')):
                         
@@ -19088,7 +19439,7 @@ def updatePICPayments(request):
                                 #RecAmount = (request.POST.getlist('Amount[]')[index]),
                                 recRefNo = request.POST.getlist('PayRefNo[]')[index],
                                 remove = request.POST.getlist('remove[]')[index],
-                            #remarks = request.POST.getlist('remarks[]')[index],
+                                remarks = request.POST.getlist('Amount[]')[index],
                             #remove= request.POST.getlist('remove[]')[index],
                             #created_by=request.user,
                             #crreatedd=datetime.datetime.now(),
@@ -19105,7 +19456,7 @@ def updatePICPayments(request):
                                 #RecAmount = (request.POST.getlist('Amount[]')[index]),
                                 recRefNo = request.POST.getlist('PayRefNo[]')[index],
                                 remove = request.POST.getlist('remove[]')[index],
-                                #remarks = request.POST.getlist('remarks[]')[index],
+                                remarks = request.POST.getlist('Amount[]')[index],
                                 #remove= request.POST.getlist('remove[]')[index],
                                 #upt_by=request.user,
                                 #crreatedd=datetime.datetime.now(),
@@ -19134,32 +19485,30 @@ def updatePICPayments(request):
                                 #print('@9305',ordernoI)
                                 dateI = row[1]
                                 amountI = row[2]
-
                                 wamountI = row[3]
-
                                 recNoI = row[4]
                                 payRefNoI = row[5]
-                            #custI =  row[5]
-                            #updI =  row[6]                        
+                                #custI =  row[5]
+                                #updI =  row[6]                        
                            
                             print(amountI)                        
                             updateOrderwiseRecData = "update %s.school_saleorder set RecAmount = '%s',  WAmount= '%s', recptNo ='%s', recDate = '%s',recRefNo='%s' where orderNo = '%s'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
-                            print('@18699',updateOrderwiseRecData)
+                            print('@19147',updateOrderwiseRecData)
                             cursor10.execute(updateOrderwiseRecData)
 
                             updateOrderwiseOSData = "update %s.school_saleorder set OSAmount = netAmount-(RecAmount+WAmount) where orderNo = '%s'  "%(str(brch),str(ordernoI)) 
-                            print('@18705',updateOrderwiseRecData)
+                            print('@19151',updateOrderwiseRecData)
                             cursor10.execute(updateOrderwiseOSData)
 
                             cursor20 = connection.cursor()
 
                             UpdRecDtlsByZOrderP = "update %s.school_daily_sales ds, %s.school_daily_receipts dr set ds.recdate = dr.recdate , ds.recrefno = dr.payrefno, ds.recptno = dr.recno  where ds.orderno = dr.orderno and ds.custcode = dr.custcode and ds.shift = 'Z' and dr.orderNo = '%s' "%(str(brch),str(brch),str(ordernoI)) 
-                            print('@18709.C20.',UpdRecDtlsByZOrderP,'',)
+                            print('@19157.C20.',UpdRecDtlsByZOrderP,'',)
                             cursor20.execute(UpdRecDtlsByZOrderP)
 
 
                             UpdSODtlsByZOrderP = "update %s.school_daily_sales ds, %s.school_saleorder so set ds.PAmt = so.NetAmount , ds.RAmt = so.recAmount, ds.WAmt = so.WAmount, ds.OSAmt=so.OSAmount  where ds.orderno = so.orderno and ds.custcode = so.custcode and ds.shift = 'Z' and so.orderNo = '%s'  "%(str(brch),str(brch),str(ordernoI)) 
-                            print('@18713.C20.',UpdSODtlsByZOrderP)
+                            print('@19162.C20.',UpdSODtlsByZOrderP)
                             cursor20.execute(UpdSODtlsByZOrderP)
 
                         #updateOrderwiseDSRecData = "update %s.school_daily_sales set PAmt = sum(netamount) where orderNo = '%s' and shift = 'Z'  "%(str(brch),str(amountI),str(wamountI),str(recNoI),str(dateI),str(payRefNoI),str(ordernoI)) 
