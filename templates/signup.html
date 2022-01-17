@@ -120,8 +120,10 @@ font-family: 'Arial', sans-serif;
 		<label for="branch"><b>Branch </b></label>&emsp;&emsp;&emsp;&emsp;
 		<select name="branch">
 				<option>SELECT </option>
+				<option value="Raithanna">Raithanna</option>
 				{% for branch in branch %}
 					<option value="{{branch.code}}">{{branch.code}}</option>
+					
 				{% endfor %}
 		</select>
 		

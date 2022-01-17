@@ -41,13 +41,12 @@ INSTALLED_APPS = [
     'mathfilters',
     'django.contrib.humanize',
     'import_export',
-    #'django.db.backends.mysql',
+    # 'django.db.backends.mysql',
     'django.db.backends.mysql',
-    
+
     'django.db.backends.sqlite3',
 
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -87,111 +86,138 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'HO',
-        'USER' : 'root',
-        'PASSWORD' : '',
-        'HOST' : 'localhost',
-        'PORT' : '',
-        
+        'USER': 'root',
+        'PASSWORD': '123',
+        'HOST': '127.0.0.1',
+        'PORT': '',
+
+    },
+
+    'KPMitta': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'KPMitta',
+        'USER': 'root',
+        'PASSWORD': '123',
+        'HOST': '127.0.0.1',
+        'PORT': '',
     },
 
     'Raithanna': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'Raithanna',
-        'USER' : 'root',
-        'PASSWORD' : '',
-        'HOST' : 'localhost',
-        'PORT' : '',
+        'USER': 'root',
+        'PASSWORD': '123',
+        'HOST': '127.0.0.1',
+        'PORT': '',
     },
-    
-    'BRGuda': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'BRGuda',
-        'USER' : 'root',
-        'PASSWORD' : '',
-        'HOST' : 'localhost',
-        'PORT' : '',
-    },
-    
-    'KPMitta': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'KPMitta',
-        'USER' : 'root',
-        'PASSWORD' : '',
-        'HOST' : 'localhost',
-        'PORT' : '',
-    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'HO',
+    #     'USER' : 'root',
+    #     'PASSWORD' : '',
+    #     'HOST' : 'localhost',
+    #     'PORT' : '',
 
-    'KJPuram': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'KJPuram',
-        'USER' : 'root',
-        'PASSWORD' : '',
-        'HOST' : 'localhost',
-        'PORT' : '',
-    },
-    
-    'TKunta': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'TKunta',
-        'USER' : 'root',
-        'PASSWORD' : '',
-        'HOST' : 'localhost',
-        'PORT' : '',
-    },
+    # },
 
-    'Malaysia': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Malaysia',
-        'USER' : 'root',
-        'PASSWORD' : '',
-        'HOST' : 'localhost',
-        'PORT' : '',
-    },
-    
-    #'KCheruvu': {
+    # 'Raithanna': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'Raithanna',
+    #     'USER' : 'root',
+    #     'PASSWORD' : '',
+    #     'HOST' : 'localhost',
+    #     'PORT' : '',
+    # },
+
+    # 'BRGuda': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'BRGuda',
+    #     'USER' : 'root',
+    #     'PASSWORD' : '',
+    #     'HOST' : 'localhost',
+    #     'PORT' : '',
+    # },
+
+    # 'KPMitta': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'KPMitta',
+    #     'USER' : 'root',
+    #     'PASSWORD' : '',
+    #     'HOST' : 'localhost',
+    #     'PORT' : '',
+    # },
+
+    # 'KJPuram': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'KJPuram',
+    #     'USER' : 'root',
+    #     'PASSWORD' : '',
+    #     'HOST' : 'localhost',
+    #     'PORT' : '',
+    # },
+
+    # 'TKunta': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'TKunta',
+    #     'USER' : 'root',
+    #     'PASSWORD' : '',
+    #     'HOST' : 'localhost',
+    #     'PORT' : '',
+    # },
+
+    # 'Malaysia': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'Malaysia',
+    #     'USER' : 'root',
+    #     'PASSWORD' : '',
+    #     'HOST' : 'localhost',
+    #     'PORT' : '',
+    # },
+
+    # 'KCheruvu': {
     #    'ENGINE': 'django.db.backends.mysql',
     #    'NAME': 'KCheruvu',
     #    'USER' : 'root',
     #    'PASSWORD' : '',
     #    'HOST' : 'localhost',
     #    'PORT' : '',
-    #},
-    
-    #'SDN': {
+    # },
+
+    # 'SDN': {
     #    'ENGINE': 'django.db.backends.mysql',
     #    'NAME': 'SDN',
     #    'USER' : 'root',
     #    'PASSWORD' : '',
     #    'HOST' : 'localhost',
     #    'PORT' : '',
-    #},
-    
-    #'SDF': {
+    # },
+
+    # 'SDF': {
     #    'ENGINE': 'django.db.backends.mysql',
     #    'NAME': 'SDF',
     #    'USER' : 'root',
     #    'PASSWORD' : '',
     #    'HOST' : 'localhost',
     #    'PORT' : '',
-    #},
-    
-    #'SDP': {
+    # },
+
+    # 'SDP': {
     #    'ENGINE': 'django.db.backends.mysql',
     #    'NAME': 'SDP',
     #    'USER' : 'root',
     #    'PASSWORD' : '',
     #    'HOST' : 'localhost',
     #    'PORT' : '',
-    #},
-    
-    
+    # },
+
+
 }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-   
+
 ]
 
 # Internationalization
@@ -217,46 +243,16 @@ STATIC_ROOT = "staticfiles"
 
 # STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),'/var/www/static/',)
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-MEDIA_URL = '/media/'
 
-
-
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-
-# EMAIL_HOST_USER = 'tuladharreddy345@gmail.com'
-# EMAIL_HOST_PASSWORD =  'exqcykjgfzabtxze'
-
-
-#EMAIL_HOST_USER = 'jacknjillsolutions@gmail.com'
-#EMAIL_HOST_PASSWORD =  'gmwyietfvztzqhux'
-
-EMAIL_HOST_USER = 'RMDP.IT@gmail.com'
-EMAIL_HOST_PASSWORD =  'pkpeteksmfgnapgp'
-EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'  # smtp.godaddy.com
 EMAIL_PORT = 587
-
-
-
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-
-# EMAIL_HOST_USER = 'RMDP.IT@gmail.com'
-# EMAIL_HOST_PASSWORD =  '121221@12am'
-# EMAIL_USE_TLS = True
-# EMAIL_PORT = 587
-
-
-#EMAIL_HOST = 'smtp.gmail.com' #smtp.godaddy.com
-#EMAIL_PORT = 587
-#EMAIL_HOST_USER = 'lsmcc2020@gmail.com'  #director@jacknjill.me
-#EMAIL_HOST_PASSWORD = 'LSMails@2020'
-#EMAIL_USE_TLS = True
-#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST_USER = 'lsmcc2020@gmail.com'  # director@jacknjill.me
+EMAIL_HOST_PASSWORD = 'LSMails@2020'
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -292,3 +288,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'tuladharreddy345@gmail.com'
+EMAIL_HOST_PASSWORD = 'exqcykjgfzabtxze'
+
+# EMAIL_HOST_USER = 'RMDP.IT@gmail.com'
+# EMAIL_HOST_PASSWORD =  'pkpeteksmfgnapgp'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
